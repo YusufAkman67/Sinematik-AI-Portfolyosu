@@ -1,0 +1,96 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-wrapper fade-in">
+    <!-- Back Navigation -->
+    <div class="back-nav">
+        {% if is_edit %}
+            <a href="{{ url_for('main.prompt_detail', id=prompt.id) }}" class="back-link">
+                <svg class="back-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Vazgeç
+            </a>
+        {% else %}
+            <a href="{{ url_for('main.index') }}" class="back-link">
+                <svg class="back-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Vazgeç
+            </a>
+        {% endif %}
+    </div>
+
+    <div class="form-card glass-panel" id="prompt-form-card">
+        <h2 class="form-title text-gradient">{% if is_edit %}Prompt Düzenle{% else %}Yeni Prompt Ekle{% endif %}</h2>
+        <p class="form-subtitle">Optimum görsel üretimi için sinematografik parametreleri tanımlayın.</p>
+        
+        <form method="POST" action="" class="main-form" novalidate id="prompt-form">
+            {{ form.csrf_token }}
+            
+            <div class="form-group">
+                {{ form.title.label(class="form-label") }}
+                {% if form.title.errors %}
+                    {{ form.title(class="form-control is-invalid", placeholder="Örn: Yağmurlu Neon Sokak Portresi", id="title") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.title.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.title(class="form-control", placeholder="Örn: Yağmurlu Neon Sokak Portresi", id="title") }}
+                {% endif %}
+                <small class="form-help">Prompt kaydınızı tanımlayan kısa, açıklayıcı bir başlık.</small>
+            </div>
+            
+            <div class="form-group">
+                {{ form.original_prompt.label(class="form-label") }}
+                {% if form.original_prompt.errors %}
+                    {{ form.original_prompt(class="form-control form-textarea is-invalid", placeholder="Örn: A cinematic portrait of a woman under neon lights, 35mm lens, photorealistic, cinematic lighting...", id="original_prompt", rows="4") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.original_prompt.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.original_prompt(class="form-control form-textarea", placeholder="Örn: A cinematic portrait of a woman under neon lights, 35mm lens, photorealistic, cinematic lighting...", id="original_prompt", rows="4") }}
+                {% endif %}
+                <small class="form-help">Midjourney, Stable Diffusion veya DALL-E için yazdığınız ana metin girdisi.</small>
+            </div>
+            
+            <div class="form-group">
+                {{ form.negative_prompt.label(class="form-label") }}
+                {% if form.negative_prompt.errors %}
+                    {{ form.negative_prompt(class="form-control form-textarea is-invalid", placeholder="Örn: ugly, deformed, noisy, low quality, duplicate...", id="negative_prompt", rows="3") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.negative_prompt.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.negative_prompt(class="form-control form-textarea", placeholder="Örn: ugly, deformed, noisy, low quality, duplicate...", id="negative_prompt", rows="3") }}
+                {% endif %}
+                <small class="form-help">Görselde bulunmasını istemediğiniz negatif nitelikler.</small>
+            </div>
+            
+            <div class="form-group">
+                {{ form.tags.label(class="form-label") }}
+                {% if form.tags.errors %}
+                    {{ form.tags(class="form-control is-invalid", placeholder="Örn: 35mm lens, cinematic lighting, cyberpunk, anamorphic", id="tags") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.tags.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.tags(class="form-control", placeholder="Örn: 35mm lens, cinematic lighting, cyberpunk, anamorphic", id="tags") }}
+                {% endif %}
+                <small class="form-help">Etiketleri virgülle ayırarak giriniz. Bu etiketler portfolyoda filtreleme yaparken kullanılacaktır.</small>
+            </div>
+            
+            <div class="form-actions-row">
+                {{ form.submit(class="btn btn-primary", id="submit-prompt") }}
+                {% if is_edit %}
+                    <a href="{{ url_for('main.prompt_detail', id=prompt.id) }}" class="btn btn-outline">İptal</a>
+                {% else %}
+                    <a href="{{ url_for('main.index') }}" class="btn btn-outline">İptal</a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

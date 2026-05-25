@@ -1,0 +1,25 @@
+# Python Virtual Environment
+venv/
+.venv/
+env/
+ENV/
+
+# Flask Environment Variables
+.env
+
+# Python Cache & Compiled Files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Databases
+*.db
+*.sqlite3
+
+# IDE / Editor Files
+.vscode/
+.idea/
+
+# OS-specific Files
+.DS_Store
+Thumbs.db

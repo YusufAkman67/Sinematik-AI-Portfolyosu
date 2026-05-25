@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="form-wrapper fade-in">
+    <!-- Back Navigation -->
+    <div class="back-nav">
+        <a href="{{ url_for('main.diary') }}" class="back-link">
+            <svg class="back-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Vazgeç
+        </a>
+    </div>
+
+    <div class="form-card glass-panel" id="diary-form-card">
+        <h2 class="form-title text-gradient">{% if is_edit %}Günlük Girdisini Düzenle{% else %}Yeni Günlük Girdisi Yaz{% endif %}</h2>
+        <p class="form-subtitle">Yapay zeka üretimlerinizdeki tecrübelerinizi, ayarlarınızı ve sonuçları not edin.</p>
+        
+        <form method="POST" action="" class="main-form" novalidate id="diary-form">
+            {{ form.csrf_token }}
+            
+            <div class="form-group">
+                {{ form.title.label(class="form-label") }}
+                {% if form.title.errors %}
+                    {{ form.title(class="form-control is-invalid", placeholder="Örn: Midjourney v6 Aydınlatma Denemesi", id="title") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.title.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.title(class="form-control", placeholder="Örn: Midjourney v6 Aydınlatma Denemesi", id="title") }}
+                {% endif %}
+                <small class="form-help">Günlüğünüz için belirleyici, kısa bir başlık.</small>
+            </div>
+            
+            <div class="form-group">
+                {{ form.content.label(class="form-label") }}
+                {% if form.content.errors %}
+                    {{ form.content(class="form-control form-textarea is-invalid", placeholder="Bugün Midjourney v6 üzerinde 35mm lens simülasyonunu test ettim. Portrelerdeki bokeh efekti oldukça başarılı...", id="content", rows="8") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.content.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.content(class="form-control form-textarea", placeholder="Bugün Midjourney v6 üzerinde 35mm lens simülasyonunu test ettim. Portrelerdeki bokeh efekti oldukça başarılı...", id="content", rows="8") }}
+                {% endif %}
+                <small class="form-help">Kullandığınız parametreler, aldığınız çıktılar veya karşılaştığınız zorluklar gibi detaylar.</small>
+            </div>
+            
+            <div class="form-group">
+                {{ form.prompt_entry_id.label(class="form-label") }}
+                {% if form.prompt_entry_id.errors %}
+                    {{ form.prompt_entry_id(class="form-control form-select is-invalid", id="prompt_entry_id") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.prompt_entry_id.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.prompt_entry_id(class="form-control form-select", id="prompt_entry_id") }}
+                {% endif %}
+                <small class="form-help">Bu günlük girdisini portfolyonuzdaki bir prompt kaydı ile ilişkilendirebilirsiniz.</small>
+            </div>
+            
+            <div class="form-actions-row">
+                {{ form.submit(class="btn btn-primary", id="submit-diary") }}
+                <a href="{{ url_for('main.diary') }}" class="btn btn-outline">İptal</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

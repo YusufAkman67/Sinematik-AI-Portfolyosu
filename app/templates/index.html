@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section fade-in">
+    <h1 class="hero-title">
+        Yapay Zeka <span class="text-gradient">Sinematik Prompt</span> Portfolyosu
+    </h1>
+    <p class="hero-subtitle">
+        Görsel üretimleriniz için optimize edilmiş sinematik promptları, lensleri, ışıklandırmaları keşfedin ve kendi AI günlüğünüzü tutun.
+    </p>
+</div>
+
+<!-- Search & Filtering Section -->
+<div class="search-filter-wrapper fade-in">
+    <form method="GET" action="{{ url_for('main.index') }}" class="search-form" id="search-form">
+        <div class="search-input-group">
+            <input type="text" name="q" value="{{ q }}" placeholder="Prompt başlığı, içeriği veya lens tipi ara..." class="form-control search-input" id="search-input">
+            {% if tag_name %}
+                <input type="hidden" name="tag" value="{{ tag_name }}">
+            {% endif %}
+            <button type="submit" class="btn btn-primary btn-search" id="btn-search-submit">
+                <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg> Ara
+            </button>
+        </div>
+    </form>
+    
+    {% if q or tag_name %}
+        <div class="active-filters">
+            <span class="filters-label">Aktif Filtreler:</span>
+            {% if q %}
+                <span class="filter-badge">
+                    Arama: "{{ q }}"
+                    <a href="{{ url_for('main.index', tag=tag_name) }}" class="remove-filter">&times;</a>
+                </span>
+            {% endif %}
+            {% if tag_name %}
+                <span class="filter-badge">
+                    Etiket: #{{ tag_name }}
+                    <a href="{{ url_for('main.index', q=q) }}" class="remove-filter">&times;</a>
+                </span>
+            {% endif %}
+            <a href="{{ url_for('main.index') }}" class="clear-all-link">Temizle</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Main Grid Layout (Sidebar + Prompt Cards) -->
+<div class="main-layout fade-in">
+    <!-- Sidebar for tags cloud -->
+    <aside class="sidebar glass-panel" id="tags-sidebar">
+        <h3 class="sidebar-title">Popüler Etiketler</h3>
+        <div class="tag-cloud">
+            {% if all_tags %}
+                {% for tag in all_tags %}
+                    <a href="{{ url_for('main.index', tag=tag.name, q=q) }}" 
+                       class="tag-badge {% if tag.name == tag_name %}active{% endif %}">
+                        #{{ tag.name }}
+                        {% if tag.prompts %}
+                            <span class="tag-count">{{ tag.prompts | length }}</span>
+                        {% endif %}
+                    </a>
+                {% endfor %}
+            {% else %}
+                <p class="empty-text">Henüz etiket bulunmuyor.</p>
+            {% endif %}
+        </div>
+    </aside>
+
+    <!-- Prompts Section -->
+    <section class="prompts-section">
+        {% if prompts %}
+            <div class="prompt-grid">
+                {% for prompt in prompts %}
+                    <article class="prompt-card glass-panel" id="prompt-card-{{ prompt.id }}">
+                        <div class="card-header">
+                            <h3 class="card-title">
+                                <a href="{{ url_for('main.prompt_detail', id=prompt.id) }}" class="card-title-link">{{ prompt.title }}</a>
+                            </h3>
+                            <span class="card-date">{{ prompt.created_at.strftime('%d.%m.%Y') }}</span>
+                        </div>
+                        
+                        <div class="card-body">
+                            <p class="card-prompt-preview">
+                                {{ prompt.original_prompt | truncate(160) }}
+                            </p>
+                            
+                            {% if prompt.tags %}
+                                <div class="card-tags">
+                                    {% for tag in prompt.tags %}
+                                        <a href="{{ url_for('main.index', tag=tag.name) }}" class="card-tag">#{{ tag.name }}</a>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="card-footer">
+                            <div class="author-info">
+                                <span class="avatar-circle">{{ prompt.author.username[0] | upper }}</span>
+                                <span class="author-name">yazan: <strong>{{ prompt.author.username }}</strong></span>
+                            </div>
+                            
+                            <div class="card-actions">
+                                <a href="{{ url_for('main.prompt_detail', id=prompt.id) }}" class="btn btn-sm btn-outline">İncele</a>
+                                {% if current_user.is_authenticated and prompt.author == current_user %}
+                                    <a href="{{ url_for('main.prompt_edit', id=prompt.id) }}" class="btn btn-sm btn-text">Düzenle</a>
+                                {% endif %}
+                            </div>
+                        </div>
+                    </article>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state glass-panel">
+                <svg class="empty-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+                <h3>Hiç Prompt Bulunamadı</h3>
+                <p>Aradığınız kriterlere uygun bir kayıt yok. Kendiniz bir tane eklemeye ne dersiniz?</p>
+                {% if current_user.is_authenticated %}
+                    <a href="{{ url_for('main.prompt_new') }}" class="btn btn-primary">Yeni Prompt Ekle</a>
+                {% else %}
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-primary">Giriş Yap ve Ekle</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </section>
+</div>
+{% endblock %}

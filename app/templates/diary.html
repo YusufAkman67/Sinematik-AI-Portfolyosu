@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="diary-wrapper fade-in">
+    <div class="diary-header-row">
+        <div class="diary-header-title-section">
+            <h1 class="diary-main-title">Kişisel <span class="text-gradient">AI Günlüğü</span></h1>
+            <p class="diary-main-subtitle">Görsel üretim süreçlerindeki gözlemlerinizi, model denemelerinizi ve parametre notlarınızı burada saklayın.</p>
+        </div>
+        <a href="{{ url_for('main.diary_new') }}" class="btn btn-primary" id="btn-new-diary">Yeni Günlük Yaz</a>
+    </div>
+
+    {% if entries %}
+        <div class="diary-timeline">
+            {% for entry in entries %}
+                <article class="diary-card glass-panel" id="diary-card-{{ entry.id }}">
+                    <div class="diary-card-header">
+                        <div class="diary-title-meta">
+                            <h3 class="diary-card-title">{{ entry.title }}</h3>
+                            <span class="diary-card-date">{{ entry.created_at.strftime('%d %B %Y, %H:%M') }}</span>
+                        </div>
+                        
+                        <div class="diary-card-actions">
+                            <a href="{{ url_for('main.diary_edit', id=entry.id) }}" class="btn btn-xs btn-outline">Düzenle</a>
+                            <form action="{{ url_for('main.diary_delete', id=entry.id) }}" method="POST" class="delete-inline-form" onsubmit="return confirm('Bu günlük girdisini silmek istediğinize emin misiniz?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-xs btn-danger">Sil</button>
+                            </form>
+                        </div>
+                    </div>
+                    
+                    <div class="diary-card-body">
+                        <p class="diary-content">{{ entry.content }}</p>
+                    </div>
+                    
+                    {% if entry.prompt_entry %}
+                        <div class="diary-card-footer">
+                            <div class="associated-prompt-badge">
+                                <span class="badge-label">İlişkili Prompt:</span>
+                                <a href="{{ url_for('main.prompt_detail', id=entry.prompt_entry.id) }}" class="badge-link">
+                                    {{ entry.prompt_entry.title }}
+                                </a>
+                            </div>
+                        </div>
+                    {% endif %}
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state glass-panel" id="diary-empty-state">
+            <svg class="empty-icon" viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            <h3>Günlüğünüz Boş</h3>
+            <p>Yapay zeka üretimleriniz sırasında aldığınız notları, model karşılaştırmalarını ve tecrübelerinizi yazarak başlayın.</p>
+            <a href="{{ url_for('main.diary_new') }}" class="btn btn-primary">İlk Günlük Girdisini Yaz</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

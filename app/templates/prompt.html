@@ -1,0 +1,139 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="prompt-detail-container fade-in">
+    <!-- Back Navigation -->
+    <div class="back-nav">
+        <a href="{{ url_for('main.index') }}" class="back-link">
+            <svg class="back-icon" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg> Geri Dön
+        </a>
+    </div>
+
+    <!-- Main Detail Card -->
+    <div class="detail-card glass-panel" id="prompt-detail-{{ prompt.id }}">
+        <div class="detail-header">
+            <div class="detail-title-section">
+                <h1 class="detail-title">{{ prompt.title }}</h1>
+                <div class="detail-meta">
+                    <span class="detail-author">
+                        <span class="avatar-circle-sm">{{ prompt.author.username[0] | upper }}</span>
+                        yazan: <strong>{{ prompt.author.username }}</strong>
+                    </span>
+                    <span class="meta-separator">&bull;</span>
+                    <span class="detail-date">{{ prompt.created_at.strftime('%d %B %Y, %H:%M') }}</span>
+                </div>
+            </div>
+            
+            {% if current_user.is_authenticated and prompt.author == current_user %}
+                <div class="detail-actions">
+                    <a href="{{ url_for('main.prompt_edit', id=prompt.id) }}" class="btn btn-outline">Düzenle</a>
+                    <form action="{{ url_for('main.prompt_delete', id=prompt.id) }}" method="POST" class="delete-inline-form" onsubmit="return confirm('Bu prompt kaydını silmek istediğinize emin misiniz?');">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                        <button type="submit" class="btn btn-danger">Sil</button>
+                    </form>
+                </div>
+            {% endif %}
+        </div>
+
+        <hr class="detail-divider">
+
+        <div class="detail-body">
+            <!-- Original Prompt Section -->
+            <div class="prompt-box-wrapper">
+                <div class="box-header">
+                    <span class="box-label">Görsel Girdisi (Original Prompt)</span>
+                    <button class="btn btn-sm btn-secondary btn-copy" onclick="copyText('prompt-text', this)">
+                        <svg class="copy-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Kopyala
+                    </button>
+                </div>
+                <div class="prompt-content-box" id="prompt-text">{{ prompt.original_prompt }}</div>
+            </div>
+
+            <!-- Negative Prompt Section (Optional) -->
+            {% if prompt.negative_prompt %}
+                <div class="prompt-box-wrapper">
+                    <div class="box-header">
+                        <span class="box-label negative">Negatif Girdi (Negative Prompt)</span>
+                        <button class="btn btn-sm btn-secondary btn-copy" onclick="copyText('negative-text', this)">
+                            <svg class="copy-icon" viewBox="0 0 24 24"><path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z"/></svg> Kopyala
+                        </button>
+                    </div>
+                    <div class="prompt-content-box negative" id="negative-text">{{ prompt.negative_prompt }}</div>
+                </div>
+            {% endif %}
+
+            <!-- Tags -->
+            {% if prompt.tags %}
+                <div class="detail-tags-section">
+                    <span class="tags-title">Etiketler:</span>
+                    <div class="detail-tags-list">
+                        {% for tag in prompt.tags %}
+                            <a href="{{ url_for('main.index', tag=tag.name) }}" class="tag-badge">#{{ tag.name }}</a>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Related Diary Entries Section -->
+    <div class="related-diary-section glass-panel">
+        <div class="section-header">
+            <h2>İlişkili AI Günlüğü Girdileri</h2>
+            {% if current_user.is_authenticated %}
+                <a href="{{ url_for('main.diary_new', prompt_id=prompt.id) }}" class="btn btn-primary btn-sm">
+                    Bu Prompt için Günlük Yaz
+                </a>
+            {% endif %}
+        </div>
+        
+        <div class="diary-list">
+            {% set logged_user_diaries = prompt.diary_entries.filter_by(user_id=current_user.id).all() if current_user.is_authenticated else [] %}
+            
+            {% if logged_user_diaries %}
+                {% for entry in logged_user_diaries %}
+                    <div class="diary-item">
+                        <div class="diary-item-header">
+                            <h4 class="diary-item-title">{{ entry.title }}</h4>
+                            <span class="diary-item-date">{{ entry.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
+                        </div>
+                        <p class="diary-item-content">{{ entry.content }}</p>
+                        <div class="diary-item-actions">
+                            <a href="{{ url_for('main.diary_edit', id=entry.id) }}" class="btn btn-xs btn-outline">Düzenle</a>
+                            <form action="{{ url_for('main.diary_delete', id=entry.id) }}" method="POST" class="delete-inline-form" onsubmit="return confirm('Bu günlük girdisini silmek istediğinize emin misiniz?');">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                                <button type="submit" class="btn btn-xs btn-danger">Sil</button>
+                            </form>
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p class="empty-sub-text">
+                    {% if current_user.is_authenticated %}
+                        Bu prompt ile ilişkilendirilmiş herhangi bir günlük kaydınız bulunmamaktadır.
+                    {% else %}
+                        İlişkili günlük kayıtlarınızı görmek için lütfen giriş yapın.
+                    {% endif %}
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<script>
+function copyText(elementId, btn) {
+    const text = document.getElementById(elementId).innerText;
+    navigator.clipboard.writeText(text).then(() => {
+        const originalHTML = btn.innerHTML;
+        btn.innerHTML = 'Kopyalandı!';
+        btn.classList.add('copied');
+        setTimeout(() => {
+            btn.innerHTML = originalHTML;
+            btn.classList.remove('copied');
+        }, 1500);
+    }).catch(err => {
+        console.error('Kopyalama hatası:', err);
+    });
+}
+</script>
+{% endblock %}

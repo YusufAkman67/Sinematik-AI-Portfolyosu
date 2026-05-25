@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="auth-wrapper fade-in">
+    <div class="auth-card glass-panel" id="login-card">
+        <h2 class="auth-title text-gradient">Giriş Yap</h2>
+        <p class="auth-subtitle">AI Portfolyonuzu ve sinematik günlüğünüzü yönetmeye başlayın.</p>
+        
+        <form method="POST" action="" class="auth-form" novalidate id="login-form">
+            {{ form.csrf_token }}
+            
+            <div class="form-group">
+                {{ form.username_or_email.label(class="form-label") }}
+                {% if form.username_or_email.errors %}
+                    {{ form.username_or_email(class="form-control is-invalid", placeholder="Kullanıcı adı veya e-posta adresi", id="username_or_email") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.username_or_email.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.username_or_email(class="form-control", placeholder="Kullanıcı adı veya e-posta adresi", id="username_or_email") }}
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                {{ form.password.label(class="form-label") }}
+                {% if form.password.errors %}
+                    {{ form.password(class="form-control is-invalid", placeholder="Şifreniz", id="password") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.password.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.password(class="form-control", placeholder="Şifreniz", id="password") }}
+                {% endif %}
+            </div>
+            
+            <div class="form-group checkbox-group">
+                {{ form.remember_me(class="form-checkbox", id="remember_me") }}
+                {{ form.remember_me.label(class="form-checkbox-label") }}
+            </div>
+            
+            <div class="form-actions">
+                {{ form.submit(class="btn btn-primary btn-block", id="submit-login") }}
+            </div>
+        </form>
+        
+        <div class="auth-footer">
+            <span>Hesabınız yok mu? <a href="{{ url_for('auth.register') }}" class="auth-link">Kayıt Olun</a></span>
+        </div>
+    </div>
+</div>
+{% endblock %}
