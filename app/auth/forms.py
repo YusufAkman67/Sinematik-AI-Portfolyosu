@@ -1,6 +1,6 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, EqualTo, Length, ValidationError, Regexp
+from wtforms.validators import DataRequired, EqualTo, Length, ValidationError, Regexp, Email
 from app.models import User
 
 class LoginForm(FlaskForm):
@@ -22,7 +22,7 @@ class RegisterForm(FlaskForm):
     ])
     email = StringField('E-posta', validators=[
         DataRequired(message='E-posta zorunludur.'),
-        Regexp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$', message='Geçersiz e-posta adresi.'),
+        Email(message='Geçersiz e-posta adresi.'),
         Length(1, 120, message='E-posta maksimum 120 karakter olmalıdır.')
     ])
     password = PasswordField('Şifre', validators=[
