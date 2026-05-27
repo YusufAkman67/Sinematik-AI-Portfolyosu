@@ -21,6 +21,26 @@ class PromptEntryForm(FlaskForm):
     ])
     submit = SubmitField('Promptu Kaydet')
 
+class PromptForm(FlaskForm):
+    title = StringField('Başlık', validators=[
+        DataRequired(message='Başlık zorunludur.'),
+        Length(max=128, message='Başlık en fazla 128 karakter olabilir.')
+    ])
+    original_prompt = TextAreaField('Prompt (Girdi)', validators=[
+        DataRequired(message='Prompt içeriği zorunludur.'),
+        Length(max=500, message='Prompt en fazla 500 karakter olabilir.')
+    ])
+    negative_prompt = TextAreaField('Negatif Prompt (İsteğe Bağlı)', validators=[
+        Optional(),
+        Length(max=500, message='Negatif Prompt en fazla 500 karakter olabilir.')
+    ])
+    tags = StringField('Etiketler (Virgülle ayırarak girin, örn: 35mm, karanlık, neon)', validators=[
+        Optional(),
+        Length(max=200, message='Etiketler en fazla 200 karakter olabilir.')
+    ])
+    submit = SubmitField('Prompt Ekle')
+
+
 class AIDiaryEntryForm(FlaskForm):
     title = StringField('Günlük Başlığı', validators=[
         DataRequired(message='Günlük başlığı zorunludur.'),

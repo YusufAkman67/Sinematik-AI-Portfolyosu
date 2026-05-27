@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container py-4 fade-in">
+    <!-- Geri Dönüş Linki -->
+    <div class="mb-4">
+        <a href="{{ url_for('main.index') }}" class="back-link text-decoration-none d-inline-flex align-items-center">
+            <svg class="back-icon me-2" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            <span>Ana Sayfaya Dön</span>
+        </a>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Form Kartı (Glass Panel Tasarımı ile birleştirilmiş Bootstrap Yapısı) -->
+            <div class="card glass-panel border-0 shadow-lg" id="create-prompt-card">
+                <div class="card-body p-4 p-md-5">
+                    <div class="text-center mb-4">
+                        <h2 class="form-title text-gradient display-6 mb-2">Yeni Sinematik Prompt</h2>
+                        <p class="form-subtitle text-muted">Yapay zeka modelleri için görselleştirme detaylarını ve sinematik etiketleri tanımlayın.</p>
+                    </div>
+
+                    <form method="POST" action="" class="needs-validation" novalidate id="create-prompt-form">
+                        {{ form.csrf_token }}
+
+                        <!-- Başlık Alanı -->
+                        <div class="mb-4 form-group">
+                            {{ form.title.label(class="form-label fw-bold mb-2") }}
+                            {% if form.title.errors %}
+                                {{ form.title(class="form-control is-invalid", placeholder="Örn: Yağmurlu Neon Sokak Portresi", id="title") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.title.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.title(class="form-control", placeholder="Örn: Yağmurlu Neon Sokak Portresi", id="title") }}
+                            {% endif %}
+                            <small class="form-text text-muted form-help d-block mt-1">Promptunuzu tanımlayan yaratıcı ve kısa bir başlık girin.</small>
+                        </div>
+
+                        <!-- Orijinal Prompt Alanı -->
+                        <div class="mb-4 form-group">
+                            {{ form.original_prompt.label(class="form-label fw-bold mb-2") }}
+                            {% if form.original_prompt.errors %}
+                                {{ form.original_prompt(class="form-control form-textarea is-invalid", placeholder="Örn: A cinematic portrait of a woman under neon lights, 35mm lens, photorealistic, cinematic lighting...", id="original_prompt", rows="4") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.original_prompt.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.original_prompt(class="form-control form-textarea", placeholder="Örn: A cinematic portrait of a woman under neon lights, 35mm lens, photorealistic, cinematic lighting...", id="original_prompt", rows="4") }}
+                            {% endif %}
+                            <small class="form-text text-muted form-help d-block mt-1">Midjourney, Stable Diffusion veya DALL-E için ana metin girdisi.</small>
+                        </div>
+
+                        <!-- Negatif Prompt Alanı -->
+                        <div class="mb-4 form-group">
+                            {{ form.negative_prompt.label(class="form-label fw-bold mb-2") }}
+                            {% if form.negative_prompt.errors %}
+                                {{ form.negative_prompt(class="form-control form-textarea is-invalid", placeholder="Örn: ugly, deformed, noisy, low quality, duplicate...", id="negative_prompt", rows="3") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.negative_prompt.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.negative_prompt(class="form-control form-textarea", placeholder="Örn: ugly, deformed, noisy, low quality, duplicate...", id="negative_prompt", rows="3") }}
+                            {% endif %}
+                            <small class="form-text text-muted form-help d-block mt-1">Görselde yer almasını istemediğiniz negatif nitelikler (isteğe bağlı).</small>
+                        </div>
+
+                        <!-- Etiketler Alanı -->
+                        <div class="mb-4 form-group">
+                            {{ form.tags.label(class="form-label fw-bold mb-2") }}
+                            {% if form.tags.errors %}
+                                {{ form.tags(class="form-control is-invalid", placeholder="Örn: 35mm, karanlık, neon", id="tags") }}
+                                <div class="invalid-feedback">
+                                    {% for error in form.tags.errors %}
+                                        <span>{{ error }}</span>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                {{ form.tags(class="form-control", placeholder="Örn: 35mm, karanlık, neon", id="tags") }}
+                            {% endif %}
+                            <small class="form-text text-muted form-help d-block mt-1">Etiketleri virgülle ayırarak girin (Örn: 35mm, karanlık, neon). Bu etiketler filtrelemede kolaylık sağlar.</small>
+                        </div>
+
+                        <!-- İşlem Butonları -->
+                        <div class="d-flex gap-3 justify-content-end mt-4">
+                            <a href="{{ url_for('main.index') }}" class="btn btn-outline">İptal</a>
+                            {{ form.submit(class="btn btn-primary px-4", id="submit-prompt") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
