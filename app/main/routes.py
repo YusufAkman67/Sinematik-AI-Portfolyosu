@@ -66,43 +66,58 @@ def prompt_detail(id):
     prompt = PromptEntry.query.get_or_404(id)
     return render_template('prompt.html', prompt=prompt)
 
+@main.route('/edit/<int:id>', methods=['GET', 'POST'])
 @main.route('/prompt/<int:id>/edit', methods=['GET', 'POST'])
 @login_required
 def prompt_edit(id):
-    prompt = PromptEntry.query.get_or_404(id)
-    if prompt.author != current_user:
+    # SQLAlchemy 2.x stili
+    prompt = db.session.get(PromptEntry, id)
+    if not prompt:
+        abort(404)
+    # Yetki Kontrolü
+    if prompt.user_id != current_user.id:
         abort(403)
         
-    form = PromptEntryForm(obj=prompt)
+    form = PromptForm()
     if request.method == 'GET':
+        form.title.data = prompt.title
+        form.original_prompt.data = prompt.original_prompt
+        form.negative_prompt.data = prompt.negative_prompt
         form.tags.data = ', '.join([t.name for t in prompt.tags])
         
     if form.validate_on_submit():
         tag_names = [t.strip().lower() for t in form.tags.data.split(',') if t.strip()]
         tags_list = []
         for name in tag_names:
-            tag = Tag.query.filter_by(name=name).first()
+            # SQLAlchemy 2.x stili sorgu
+            tag = db.session.scalar(select(Tag).where(Tag.name == name))
             if not tag:
                 tag = Tag(name=name)
                 db.session.add(tag)
             tags_list.append(tag)
             
-        prompt.tags = tags_list
         prompt.title = form.title.data
         prompt.original_prompt = form.original_prompt.data
         prompt.negative_prompt = form.negative_prompt.data or None
+        prompt.tags = tags_list
         db.session.commit()
         flash('Prompt başarıyla güncellendi!', 'success')
         return redirect(url_for('main.prompt_detail', id=prompt.id))
         
-    return render_template('prompt_form.html', title='Prompt Düzenle', form=form, is_edit=True, prompt=prompt)
+    return render_template('main/create_prompt.html', title='Prompt Düzenle', form=form, is_edit=True, prompt=prompt)
 
+@main.route('/delete/<int:id>', methods=['POST'])
 @main.route('/prompt/<int:id>/delete', methods=['POST'])
 @login_required
 def prompt_delete(id):
-    prompt = PromptEntry.query.get_or_404(id)
-    if prompt.author != current_user:
+    # SQLAlchemy 2.x stili
+    prompt = db.session.get(PromptEntry, id)
+    if not prompt:
+        abort(404)
+    # Yetki Kontrolü
+    if prompt.user_id != current_user.id:
         abort(403)
+        
     db.session.delete(prompt)
     db.session.commit()
     flash('Prompt başarıyla silindi.', 'success')
