@@ -8,28 +8,31 @@ from app.main.forms import PromptEntryForm, AIDiaryEntryForm, PromptForm
 from app.models import PromptEntry, Tag, AIDiaryEntry
 
 @main.route('/')
+@main.route('/index')
 def index():
     q = request.args.get('q', '')
     tag_name = request.args.get('tag', '')
     
-    query = PromptEntry.query
+    stmt = select(PromptEntry)
     if q:
-        query = query.filter(
+        stmt = stmt.where(
             PromptEntry.title.ilike(f'%{q}%') | 
             PromptEntry.original_prompt.ilike(f'%{q}%') |
             PromptEntry.negative_prompt.ilike(f'%{q}%')
         )
     if tag_name:
-        tag = Tag.query.filter_by(name=tag_name).first()
+        tag = db.session.scalar(select(Tag).where(Tag.name == tag_name))
         if tag:
-            query = query.filter(PromptEntry.tags.contains(tag))
+            stmt = stmt.where(PromptEntry.tags.contains(tag))
         else:
-            query = query.filter(db.false())
+            stmt = stmt.where(db.false())
             
-    prompts = query.order_by(PromptEntry.created_at.desc()).all()
-    all_tags = Tag.query.order_by(Tag.name).all()
+    stmt = stmt.order_by(PromptEntry.created_at.desc())
+    prompts = db.session.scalars(stmt).all()
+    all_tags = db.session.scalars(select(Tag).order_by(Tag.name)).all()
     
-    return render_template('index.html', prompts=prompts, all_tags=all_tags, q=q, tag_name=tag_name)
+    return render_template('main/index.html', prompts=prompts, all_tags=all_tags, q=q, tag_name=tag_name)
+
 
 @main.route('/prompt/new', methods=['GET', 'POST'])
 @login_required
