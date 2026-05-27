@@ -1,6 +1,8 @@
 import unittest
+from sqlalchemy import select
 from app import create_app, db
 from app.models import User, PromptEntry, Tag, AIDiaryEntry
+
 
 class RoutesTestCase(unittest.TestCase):
     def setUp(self):
@@ -268,3 +270,24 @@ class RoutesTestCase(unittest.TestCase):
         
         deleted_entry = AIDiaryEntry.query.get(entry.id)
         self.assertIsNone(deleted_entry)
+
+    def test_create_prompt_new_route(self):
+        self.login()
+        response = self.client.post('/create', data={
+            'title': 'Test Create Route',
+            'original_prompt': 'A cinematic shot, 35mm lens, neon street lights',
+            'negative_prompt': 'blurry, noise',
+            'tags': '35mm, neon, cinematic'
+        }, follow_redirects=True)
+
+        self.assertEqual(response.status_code, 200)
+        p = db.session.scalar(select(PromptEntry).where(PromptEntry.title == 'Test Create Route'))
+        self.assertIsNotNone(p)
+        self.assertEqual(p.original_prompt, 'A cinematic shot, 35mm lens, neon street lights')
+        self.assertEqual(p.negative_prompt, 'blurry, noise')
+        self.assertEqual(p.author, self.user)
+        self.assertEqual(len(p.tags), 3)
+        self.assertIn('35mm', [t.name for t in p.tags])
+        self.assertIn('neon', [t.name for t in p.tags])
+        self.assertIn('cinematic', [t.name for t in p.tags])
+

@@ -1,8 +1,10 @@
 from flask import render_template, redirect, url_for, flash, request, abort
 from flask_login import login_required, current_user
+from sqlalchemy import select
 from app import db
 from app.main import main
-from app.main.forms import PromptEntryForm, AIDiaryEntryForm
+from app.main.forms import PromptEntryForm, AIDiaryEntryForm, PromptForm
+
 from app.models import PromptEntry, Tag, AIDiaryEntry
 
 @main.route('/')
@@ -190,4 +192,36 @@ def diary_delete(id):
     db.session.commit()
     flash('Günlük girdisi başarıyla silindi.', 'success')
     return redirect(url_for('main.diary'))
+
+
+@main.route('/create', methods=['GET', 'POST'])
+@login_required
+def create():
+    form = PromptForm()
+    if form.validate_on_submit():
+        tag_names = [t.strip().lower() for t in form.tags.data.split(',') if t.strip()]
+        tags_list = []
+        for name in tag_names:
+            # SQLAlchemy 2.x query style
+            tag = db.session.scalar(select(Tag).where(Tag.name == name))
+            if not tag:
+                tag = Tag(name=name)
+                db.session.add(tag)
+            tags_list.append(tag)
+            
+        prompt = PromptEntry(
+            title=form.title.data,
+            original_prompt=form.original_prompt.data,
+            negative_prompt=form.negative_prompt.data or None,
+            user_id=current_user.id
+        )
+        for tag in tags_list:
+            prompt.tags.append(tag)
+            
+        db.session.add(prompt)
+        db.session.commit()
+        flash('Yeni sinematik prompt başarıyla oluşturuldu!', 'success')
+        return redirect(url_for('main.index'))
+    return render_template('main/create_prompt.html', title='Yeni Prompt Ekle', form=form)
+
 
