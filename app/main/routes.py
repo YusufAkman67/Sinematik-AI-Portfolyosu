@@ -28,10 +28,14 @@ def index():
             stmt = stmt.where(db.false())
             
     stmt = stmt.order_by(PromptEntry.created_at.desc())
-    prompts = db.session.scalars(stmt).all()
+    
+    page = request.args.get('page', 1, type=int)
+    pagination = db.paginate(stmt, page=page, per_page=10, error_out=False)
+    prompts = pagination.items
+    
     all_tags = db.session.scalars(select(Tag).order_by(Tag.name)).all()
     
-    return render_template('main/index.html', prompts=prompts, all_tags=all_tags, q=q, tag_name=tag_name)
+    return render_template('main/index.html', prompts=prompts, pagination=pagination, all_tags=all_tags, q=q, tag_name=tag_name)
 
 
 @main.route('/prompt/new', methods=['GET', 'POST'])

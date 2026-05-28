@@ -50,6 +50,43 @@ class RoutesTestCase(unittest.TestCase):
         self.assertIn(b'Neon Cyberpunk', response.data)
         self.assertIn(b'35mm Classic Film', response.data)
 
+    def test_index_pagination(self):
+        import datetime
+        # Add 12 dummy prompts with increasing created_at
+        prompts = []
+        base_time = datetime.datetime.utcnow()
+        for i in range(12):
+            p = PromptEntry(
+                title=f'Prompt-{i:02d}',
+                original_prompt=f'Original prompt content {i}',
+                user_id=self.user.id,
+                created_at=base_time + datetime.timedelta(seconds=i)
+            )
+            prompts.append(p)
+        db.session.add_all(prompts)
+        db.session.commit()
+
+        # Page 1 should contain 10 items (from 2 to 11 due to descending order)
+        response = self.client.get('/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Prompt-11', response.data)
+        self.assertIn(b'Prompt-02', response.data)
+        self.assertNotIn(b'Prompt-01', response.data)
+        self.assertNotIn(b'Prompt-00', response.data)
+        # Should have a next page link
+        self.assertIn(b'page=2', response.data)
+        self.assertIn(b'Sonraki', response.data)
+
+        # Page 2 should contain the remaining 2 items (0 and 1)
+        response = self.client.get('/?page=2')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Prompt-01', response.data)
+        self.assertIn(b'Prompt-00', response.data)
+        self.assertNotIn(b'Prompt-11', response.data)
+        # Should have a previous page link
+        self.assertIn(b'page=1', response.data)
+        self.assertIn(b'&laquo; \xc3\x96nceki', response.data)
+
     def test_index_search(self):
         p1 = PromptEntry(title='Neon Cyberpunk', original_prompt='neon street portrait', user_id=self.user.id)
         p2 = PromptEntry(title='35mm Classic Film', original_prompt='classic noir street', user_id=self.other_user.id)

@@ -118,6 +118,40 @@
                     </div>
                 {% endfor %}
             </div>
+            
+            <!-- Sayfalama (Pagination) -->
+            {% if pagination and pagination.pages > 1 %}
+            <nav aria-label="Prompt sayfaları" class="mt-5">
+                <ul class="pagination justify-content-center">
+                    <!-- Önceki Sayfa -->
+                    <li class="page-item {% if not pagination.has_prev %}disabled{% endif %}">
+                        <a class="page-link" href="{% if pagination.has_prev %}{{ url_for('main.index', page=pagination.prev_num, q=q or None, tag=tag_name or None) }}{% else %}#{% endif %}" aria-label="Önceki">
+                            <span aria-hidden="true">&laquo; Önceki</span>
+                        </a>
+                    </li>
+
+                    <!-- Sayfa Numaraları -->
+                    {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                        {% if page_num %}
+                            <li class="page-item {% if page_num == pagination.page %}active{% endif %}">
+                                <a class="page-link" href="{{ url_for('main.index', page=page_num, q=q or None, tag=tag_name or None) }}">{{ page_num }}</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <span class="page-link">...</span>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+
+                    <!-- Sonraki Sayfa -->
+                    <li class="page-item {% if not pagination.has_next %}disabled{% endif %}">
+                        <a class="page-link" href="{% if pagination.has_next %}{{ url_for('main.index', page=pagination.next_num, q=q or None, tag=tag_name or None) }}{% else %}#{% endif %}" aria-label="Sonraki">
+                            <span aria-hidden="true">Sonraki &raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+            {% endif %}
         {% else %}
             <div class="empty-state glass-panel text-center p-5 rounded">
                 <svg class="empty-icon text-muted mb-3" width="48" height="48" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
