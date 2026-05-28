@@ -22,9 +22,10 @@ Veritabanı ilişkileri modern SQLAlchemy 2.x API (Mapped, mapped_column) stiliy
 - **Tasarım Dili**: Slate-900 / dark arka plan üzerine kurulu glassmorphism paneller (yarı saydam border ve arka plan blur) kullanılmıştır.
 - **Responsive Arayüz**: Mobil cihazlar, tabletler ve bilgisayarlarla tam uyumlu esnek CSS Grid ve Flexbox yapısı kullanılmıştır.
 - **Pano Kopyalama**: Prompt detay sayfasında yer alan "Kopyala" butonları ile metinler tek tıkla panoya kopyalanabilir.
+- **Sayfalama (Pagination)**: Anasayfada promptların listelendiği alanın altına sayfa numaralarını ve ileri/geri navigasyon butonlarını içeren yarı saydam, glassmorphic sayfalama çubuğu eklenmiştir. Arama ve etiket filtreleri sayfa geçişlerinde korunmaktadır.
 
 ## 5. Test ve Doğrulama Süreçleri
-Uygulamada yer alan tüm yetkilendirme sınırları, CRUD operasyonları ve arama/filtreleme mantığı yazılan 31 birim test ile otomatik olarak test edilmektedir.
+Uygulamada yer alan tüm yetkilendirme sınırları, CRUD operasyonları, arama/filtreleme mantığı ve sayfalama süreçleri yazılan **34 birim test** ile otomatik olarak test edilmektedir.
  Test komutu:
 ```powershell
 .\venv\Scripts\python.exe -m unittest discover -s tests

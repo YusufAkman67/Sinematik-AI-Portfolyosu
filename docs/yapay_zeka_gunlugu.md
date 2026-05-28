@@ -32,3 +32,11 @@ Bu günlük, **Sinematik AI Prompt Portfolyosu ve AI Günlüğü** projesinin ya
 - **Sorun Giderme**: WTForms email doğrulaması için gereken ağır `email_validator` bağımlılığı yerine, `forms.py` dosyasına özel ve hafif bir Regex doğrulayıcı eklenerek paket bağımlılıkları temizlendi.
 - Yapılan unittest çalıştırmasında 31 testin tamamının başarıyla geçtiği doğrulandı (`OK`).
 - Git deposu başlatılarak tüm kodlar ilk commit ile yerel depoya alındı, GitHub uzak sunucusu eklenerek kodlar başarıyla push edildi.
+
+## 📅 Adım 6: Sayfalama (Pagination), Arama ve Etiket Filtreleme Entegrasyonu
+- **Sayfalama**: Anasayfadaki prompt sayısının artması durumunda arayüzün düzenli kalması amacıyla modern SQLAlchemy 2.x standardı `db.paginate` fonksiyonu kullanılarak sayfa başına 10 kayıtlık sayfalama yapısı kuruldu.
+- **Arama**: Arama filtresi `db.or_` yapısına geçirilerek sadece prompt başlığı ve orijinal prompt metni üzerinde büyük-küçük harfe duyarsız (`ilike`) şekilde çalışacak biçimde optimize edildi.
+- **Etiket Filtreleme**: Etiket filtreleme sorguları ilişkili tablo üzerinden `any()` filtresi kullanılarak veritabanı düzeyinde tek aşamalı ve performanslı hale getirildi.
+- **Entegrasyon ve Koruma**: Arama terimleri ve seçili etiket filtreleri sayfa geçişleri sırasında URL parametresi olarak korunacak şekilde Jinja2 şablonları ve rotalar güncellendi. Boş parametreler `or None` yapısıyla URL'den temizlenerek URL estetiği sağlandı.
+- **Otomatik Testler**: Sayfalama, arama ve etiket filtrelemenin entegre bir şekilde çalıştığını doğrulayan yeni birim ve entegrasyon testleri yazılarak toplam test sayısı **34**'e çıkarıldı. Testlerin tamamı `OK` olarak sonuçlandı.
+- **Git & GitHub**: Yapılan tüm geliştirmeler yerel Git deposuna commit edilerek uzak GitHub sunucusuna başarıyla gönderildi (`push`).
