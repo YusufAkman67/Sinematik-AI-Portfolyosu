@@ -11,7 +11,7 @@ from app.models import PromptEntry, Tag, AIDiaryEntry
 @main.route('/index')
 def index():
     q = request.args.get('q', '')
-    tag_name = request.args.get('tag', '')
+    tag = request.args.get('tag', '')
     
     stmt = select(PromptEntry)
     if q:
@@ -21,12 +21,8 @@ def index():
                 PromptEntry.original_prompt.ilike(f'%{q}%')
             )
         )
-    if tag_name:
-        tag = db.session.scalar(select(Tag).where(Tag.name == tag_name))
-        if tag:
-            stmt = stmt.where(PromptEntry.tags.contains(tag))
-        else:
-            stmt = stmt.where(db.false())
+    if tag:
+        stmt = stmt.where(PromptEntry.tags.any(Tag.name == tag))
             
     stmt = stmt.order_by(PromptEntry.created_at.desc())
     
@@ -36,7 +32,7 @@ def index():
     
     all_tags = db.session.scalars(select(Tag).order_by(Tag.name)).all()
     
-    return render_template('main/index.html', prompts=prompts, pagination=pagination, all_tags=all_tags, q=q, tag_name=tag_name)
+    return render_template('main/index.html', prompts=prompts, pagination=pagination, all_tags=all_tags, q=q, tag_name=tag)
 
 
 @main.route('/prompt/new', methods=['GET', 'POST'])

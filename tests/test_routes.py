@@ -113,6 +113,49 @@ class RoutesTestCase(unittest.TestCase):
         self.assertIn(b'Neon Cyberpunk', response.data)
         self.assertNotIn(b'35mm Classic Film', response.data)
 
+    def test_index_tag_search_pagination(self):
+        t1 = Tag(name='cyberpunk')
+        t2 = Tag(name='classic')
+        db.session.add_all([t1, t2])
+        db.session.commit()
+
+        # Add 12 cyberpunk prompts and 1 classic prompt
+        import datetime
+        prompts = []
+        base_time = datetime.datetime.utcnow()
+        for i in range(12):
+            p = PromptEntry(
+                title=f'Neon-{i:02d}',
+                original_prompt=f'Cyberpunk landscape {i}',
+                user_id=self.user.id,
+                created_at=base_time + datetime.timedelta(seconds=i)
+            )
+            p.tags.append(t1)
+            prompts.append(p)
+            
+        p_classic = PromptEntry(
+            title='Classic-99',
+            original_prompt='Noir film style',
+            user_id=self.user.id,
+            created_at=base_time + datetime.timedelta(seconds=15)
+        )
+        p_classic.tags.append(t2)
+        prompts.append(p_classic)
+
+        db.session.add_all(prompts)
+        db.session.commit()
+
+        # Filter by tag=cyberpunk & q=Neon
+        response = self.client.get('/?tag=cyberpunk&q=Neon')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b'Neon-11', response.data)
+        self.assertNotIn(b'Classic-99', response.data)
+        self.assertNotIn(b'Neon-01', response.data)
+
+        # Check pagination URLs retain tag=cyberpunk and q=Neon
+        self.assertIn(b'tag=cyberpunk', response.data)
+        self.assertIn(b'q=Neon', response.data)
+
     def test_prompt_crud_anonymous(self):
         # Cannot add prompt
         response = self.client.get('/prompt/new')
