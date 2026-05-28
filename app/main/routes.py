@@ -16,9 +16,10 @@ def index():
     stmt = select(PromptEntry)
     if q:
         stmt = stmt.where(
-            PromptEntry.title.ilike(f'%{q}%') | 
-            PromptEntry.original_prompt.ilike(f'%{q}%') |
-            PromptEntry.negative_prompt.ilike(f'%{q}%')
+            db.or_(
+                PromptEntry.title.ilike(f'%{q}%'),
+                PromptEntry.original_prompt.ilike(f'%{q}%')
+            )
         )
     if tag_name:
         tag = db.session.scalar(select(Tag).where(Tag.name == tag_name))
