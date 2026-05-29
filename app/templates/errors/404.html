@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Sahne Bulunamadı - Sinematik AI</title>
+    <!-- Meta tags for SEO -->
+    <meta name="description" content="Aradığınız sahne mevcut değil. Sinematik AI'a geri dönün.">
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts: Outfit & Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #090d16;
+            color: #f3f4f6;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .error-card {
+            background: rgba(17, 24, 39, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+            padding: 3.5rem 2rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .error-card:hover {
+            border-color: rgba(99, 102, 241, 0.25);
+            box-shadow: 0 12px 40px rgba(99, 102, 241, 0.15);
+        }
+        .error-code {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a78bfa 0%, #818cf8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 6.5rem;
+            line-height: 1;
+            margin-bottom: 1.5rem;
+        }
+        .error-title {
+            font-family: 'Outfit', sans-serif;
+            font-weight: 700;
+            color: #ffffff;
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+        .error-text {
+            color: #9ca3af;
+            font-size: 1.1rem;
+            max-width: 450px;
+            margin: 0 auto 2.5rem auto;
+            line-height: 1.6;
+        }
+        .btn-home {
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #ffffff;
+            font-weight: 600;
+            border: none;
+            padding: 0.8rem 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.25);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+        }
+        .btn-home:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+            color: #ffffff;
+        }
+        .camera-icon {
+            color: #8b5cf6;
+            margin-bottom: 1.5rem;
+            animation: float 4s ease-in-out infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-10px) rotate(3deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="error-card">
+                    <!-- Film Camera Off SVG Icon -->
+                    <div class="camera-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" fill="currentColor" class="bi bi-camera-video-off" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M10.961 12.365a1.99 1.99 0 0 0 .522-1.103l3.11 1.382A1 1 0 0 0 16 11.731V4.269a1 1 0 0 0-1.406-.913l-3.111 1.382A2 2 0 0 0 9.5 3H4.272l.714 1H9.5a1 1 0 0 1 1 1v6a1 1 0 0 1-.039.278zM1.11 1.11a.5.5 0 0 1 .708 0L15.364 14.646a.5.5 0 1 1-.708.708l-2-2L12 13.048V11.73a1 1 0 0 0-.418-.813L1.11 1.818a.5.5 0 0 1 0-.707zM2.5 5.006V11a1 1 0 0 0 1 1h4.793l-5.793-5.994z"/>
+                        </svg>
+                    </div>
+                    <div class="error-code">404</div>
+                    <h1 class="error-title">Aradığınız sahne mevcut değil</h1>
+                    <p class="error-text">Kayıp bir film rulosu ya da kurgu masasında kesilmiş bir sekans olabilir. Aradığınız sahne portfolyomuzda bulunamadı.</p>
+                    <a href="{{ url_for('main.index') }}" class="btn btn-home">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-arrow-left me-2" viewBox="0 0 16 16">
+                          <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                        </svg>
+                        Anasayfaya Dön
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
