@@ -39,7 +39,7 @@
                     <div class="card-footer">
                         <div class="author-info">
                             <span class="avatar-circle">{{ prompt.author.username[0] | upper }}</span>
-                            <span class="author-name">yazan: <strong>{{ prompt.author.username }}</strong></span>
+                            <span class="author-name">yazan: <a href="{{ url_for('main.profile', username=prompt.author.username) }}" class="text-white text-decoration-none"><strong>{{ prompt.author.username }}</strong></a></span>
                         </div>
                         
                         <div class="card-actions">

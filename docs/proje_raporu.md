@@ -20,6 +20,7 @@ Veritabanı ilişkileri modern SQLAlchemy 2.x API (Mapped, mapped_column) stiliy
 ## 4. Tasarım Dili ve Kullanıcı Deneyimi (UI/UX)
 - **Tasarım Dili (Slate-900 Glassmorphism):** Arayüzde `Slate-900` (`#090d16` - `#111827`) tonlarında karanlık ve sinematik bir arka plan kullanılmıştır. Kartlar, form alanları ve menüler yarı saydam (`rgba`), ince beyaz sınırlı (`border-color: rgba(255, 255, 255, 0.05)`) ve arka plan bluru (`backdrop-filter: blur(16px)`) içeren **glassmorphism** stiliyle tasarlanmıştır. Indigo ve violet degradeleri ile canlandırılmıştır.
 - **Bootstrap 5 & Responsive Yapı:** Hata sayfaları (404 & 500) ve profil sayfası bağımsız ve güvenli şablonlar olarak tasarlanmış olup Bootstrap 5 grid sistemi ve responsive sınıflarından yararlanılmıştır. Tüm portfolyo ekranları mobil, tablet ve masaüstü çözünürlükleriyle tam uyumludur.
+- **Tıklanabilir Yazar Profil Bağlantıları:** Anasayfa (`index.html`) ve profil sayfasındaki (`profile.html`) prompt kartlarında yer alan yazar kullanıcı adları, kartın görsel yapısını bozmayacak şekilde tıklanabilir linklere dönüştürülmüş ve yazarın kişisel portfolyosuna yönlendirme sağlanmıştır.
 - **Sayfalama (Pagination):** Anasayfada promptların listelendiği alanın altına sayfa numaralarını ve ileri/geri navigasyon butonlarını içeren yarı saydam, glassmorphic sayfalama çubuğu eklenmiştir. Arama ve etiket filtreleri sayfa geçişlerinde URL parametreleri olarak korunmaktadır.
 - **Kopyalama Fonksiyonu:** Detay sayfasındaki "Kopyala" butonu ile promptlar tek tıkla panoya kopyalanabilir.
 
