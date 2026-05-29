@@ -35,7 +35,7 @@ docs/
   yapay_zeka_gunlugu.md # Yapay Zeka Günlüğü (AI Log)
   proje_raporu.md       # Proje Raporu (Project Report)
 migrations/            # Flask-Migrate veritabanı şema göç dosyaları
-tests/                 # Birim ve entegrasyon testleri (36 test)
+tests/                 # Birim ve entegrasyon testleri (38 test)
 config.py              # Uygulama yapılandırma parametreleri
 requirements.txt       # Gerekli Python kütüphaneleri listesi
 .env.example           # Örnek çevre değişkenleri şablonu
@@ -110,7 +110,7 @@ Uygulama varsayılan olarak **`http://127.0.0.1:5000`** adresinde çalışmaya b
 
 ## 🧪 Testlerin Koşturulması
 
-Uygulamada yer alan tüm birim ve entegrasyon testlerini (toplam 36 adet) koşturmak için terminalde şu komutu çalıştırınız:
+Uygulamada yer alan tüm birim ve entegrasyon testlerini (toplam 38 adet) koşturmak için terminalde şu komutu çalıştırınız:
 ```bash
 venv\Scripts\python.exe -m unittest discover tests
 ```

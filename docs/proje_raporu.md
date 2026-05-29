@@ -7,7 +7,7 @@ Bu proje, yapay zeka tabanlı görsel üretim araçları (Midjourney, Stable Dif
 Uygulama, Flask topluluğu tarafından önerilen modern ve modüler **Application Factory Pattern** ve **Blueprint** mimarisi ile kurulmuştur:
 - **`app/`**: Tüm uygulama dosyalarını barındıran çekirdek klasör.
 - **`auth` Blueprint**: Kullanıcı kayıt, giriş ve çıkış işlemlerinin mantıksal katmanı.
-- **`main` Blueprint**: Rotaların (Prompt ve Günlük işlemleri) CRUD mantığı, arama, etiket bazlı filtreleme ve sayfalama süreçleri.
+- **`main` Blueprint**: Rotaların (Prompt ve Günlük işlemleri) CRUD mantığı, arama, etiket bazlı filtreleme, sayfalama ve kullanıcı profili (`/profile/<username>`) süreçleri.
 - **`errors` Blueprint**: Uygulama genelinde oluşan 404 (Sayfa Bulunamadı) ve 500 (Sunucu Hatası) hatalarını yakalayan merkezi hata yönetimi katmanı.
 
 ## 3. Veritabanı Modelleri ve İlişki Yapıları
@@ -19,7 +19,7 @@ Veritabanı ilişkileri modern SQLAlchemy 2.x API (Mapped, mapped_column) stiliy
 
 ## 4. Tasarım Dili ve Kullanıcı Deneyimi (UI/UX)
 - **Tasarım Dili (Slate-900 Glassmorphism):** Arayüzde `Slate-900` (`#090d16` - `#111827`) tonlarında karanlık ve sinematik bir arka plan kullanılmıştır. Kartlar, form alanları ve menüler yarı saydam (`rgba`), ince beyaz sınırlı (`border-color: rgba(255, 255, 255, 0.05)`) ve arka plan bluru (`backdrop-filter: blur(16px)`) içeren **glassmorphism** stiliyle tasarlanmıştır. Indigo ve violet degradeleri ile canlandırılmıştır.
-- **Bootstrap 5 & Responsive Yapı:** Hata sayfaları (404 & 500) bağımsız ve güvenli şablonlar olarak tasarlanmış olup Bootstrap 5 grid sistemi ve responsive sınıflarından yararlanılmıştır. Tüm portfolyo ekranları mobil, tablet ve masaüstü çözünürlükleriyle tam uyumludur.
+- **Bootstrap 5 & Responsive Yapı:** Hata sayfaları (404 & 500) ve profil sayfası bağımsız ve güvenli şablonlar olarak tasarlanmış olup Bootstrap 5 grid sistemi ve responsive sınıflarından yararlanılmıştır. Tüm portfolyo ekranları mobil, tablet ve masaüstü çözünürlükleriyle tam uyumludur.
 - **Sayfalama (Pagination):** Anasayfada promptların listelendiği alanın altına sayfa numaralarını ve ileri/geri navigasyon butonlarını içeren yarı saydam, glassmorphic sayfalama çubuğu eklenmiştir. Arama ve etiket filtreleri sayfa geçişlerinde URL parametreleri olarak korunmaktadır.
 - **Kopyalama Fonksiyonu:** Detay sayfasındaki "Kopyala" butonu ile promptlar tek tıkla panoya kopyalanabilir.
 
@@ -28,7 +28,7 @@ Veritabanı ilişkileri modern SQLAlchemy 2.x API (Mapped, mapped_column) stiliy
 - **İşlem Güvenliği:** 500 sunucu hatası oluştuğunda, yarım kalan veritabanı işlemlerinin veri tutarsızlığına yol açmaması için `db.session.rollback()` çalıştırılarak oturum güvenli bir şekilde sıfırlanmaktadır.
 
 ## 6. Test ve Doğrulama Süreçleri
-Uygulamada yer alan tüm yetkilendirme sınırları, CRUD operasyonları, arama/filtreleme mantığı, sayfalama süreçleri ve hata yakalama senaryoları yazılan **36 adet birim ve entegrasyon testi** (unittest) ile otomatik olarak test edilmektedir.
+Uygulamada yer alan tüm yetkilendirme sınırları, CRUD operasyonları, arama/filtreleme mantığı, sayfalama süreçleri, profil sayfaları ve hata yakalama senaryoları yazılan **38 adet birim ve entegrasyon testi** (unittest) ile otomatik olarak test edilmektedir.
 Testlerin koşturulma komutu:
 ```powershell
 venv\Scripts\python.exe -m unittest discover tests

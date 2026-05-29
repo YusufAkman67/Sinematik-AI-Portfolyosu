@@ -28,6 +28,10 @@ Aşağıda, kullanıcının projeyi şekillendiren ve AI asistanının eski/yanl
 *   **Kullanıcı Yönlendirmesi & Uyarı:** Uygulamanın tamamlanmasının ardından, profesyonel bir dokunuş için 404 (Sayfa Bulunamadı) ve 500 (Sunucu Hatası) durumlarının yakalanıp sinematik temaya uygun özelleştirilmiş hata şablonlarıyla gösterilmesi uyarısı yapılmıştır.
 *   **Teknik Müdahale:** `app/errors` adında yeni bir blueprint oluşturulmuştur. 500 hatası durumunda veritabanında oluşabilecek tutarsızlıkları önlemek için `db.session.rollback()` çağrısı eklenmiş, Bootstrap 5 tabanlı, premium dark temalı `404.html` ve `500.html` sayfaları oluşturulmuştur. 404 sayfasında *"Aradığınız sahne mevcut değil"*, 500 sayfasında ise *"Beklenmedik bir kurgu hatası oluştu"* gibi yaratıcı metinler ve CSS animasyonları kullanılmıştır.
 
+### 📅 Oturum 7: Profil Sayfası ve Navbar Gezinme Entegrasyonu
+*   **Kullanıcı Yönlendirmesi & Uyarı:** Kullanıcıların kendi promptlarını sergileyebileceği ve başkalarının portfolyolarını görebileceği public (herkese açık) bir profil sayfası yapısı eklenmesi talimatı verilmiştir.
+*   **Teknik Müdahale:** `/profile/<username>` rotası `routes.py` dosyasına eklendi ve SQLAlchemy 2.x standardı `db.session.scalar(select(User)...)` ile kullanıcı sorgulaması yapıldı. Anasayfadaki Bootstrap 5 kart tasarımı ile birebir uyumlu `profile.html` şablonu oluşturuldu. Navbar'a giriş yapmış kullanıcılar için "Profilim" linki eklendi. Toplam birim ve entegrasyon test sayısı yeni yazılan testlerle **38**'e çıkarıldı.
+
 ---
 
 ## 📈 Geliştirme Adımları ve Teknik Kararlar (Özet)
@@ -35,4 +39,4 @@ Aşağıda, kullanıcının projeyi şekillendiren ve AI asistanının eski/yanl
 *   **Adım 1: Proje İskeleti (Factory Pattern):** Flask 3.x ve Blueprint mimarisiyle sürdürülebilir altyapı kuruldu.
 *   **Adım 2: Veritabanı Şeması:** Flask-Migrate ile SQLite şema göçleri yönetildi.
 *   **Adım 3: HTML5 & Premium Vanilla CSS:** Slate-900 glassmorphism tasarımı, kopyalama fonksiyonu ve responsive navigasyon vanilla CSS (`style.css`) ile geliştirildi.
-*   **Adım 4: Birim ve Entegrasyon Testleri:** Flask test client kullanılarak yetkilendirme, arama, sayfalama ve hata yönetimi süreçleri 36 birim testiyle %100 doğrulandı.
+*   **Adım 4: Birim ve Entegrasyon Testleri:** Flask test client kullanılarak yetkilendirme, arama, sayfalama, hata yönetimi ve profil süreçleri 38 birim testiyle %100 doğrulandı.
