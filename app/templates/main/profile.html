@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="hero-section fade-in">
+    <h1 class="hero-title">
+        @<span class="text-gradient">{{ user.username }}</span> Portfolyosu
+    </h1>
+    <p class="hero-subtitle">
+        {{ user.username }} tarafından oluşturulmuş tüm sinematik AI promptları.
+    </p>
+</div>
+
+<div class="fade-in">
+    {% if prompts %}
+        <div class="prompt-grid">
+            {% for prompt in prompts %}
+                <article class="prompt-card glass-panel" id="prompt-card-{{ prompt.id }}">
+                    <div class="card-header">
+                        <h3 class="card-title">
+                            <a href="{{ url_for('main.prompt_detail', id=prompt.id) }}" class="card-title-link">{{ prompt.title }}</a>
+                        </h3>
+                        <span class="card-date">{{ prompt.created_at.strftime('%d.%m.%Y') }}</span>
+                    </div>
+                    
+                    <div class="card-body">
+                        <p class="card-prompt-preview">
+                            {{ prompt.original_prompt | truncate(160) }}
+                        </p>
+                        
+                        {% if prompt.tags %}
+                            <div class="card-tags">
+                                {% for tag in prompt.tags %}
+                                    <a href="{{ url_for('main.index', tag=tag.name) }}" class="card-tag">#{{ tag.name }}</a>
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="card-footer">
+                        <div class="author-info">
+                            <span class="avatar-circle">{{ prompt.author.username[0] | upper }}</span>
+                            <span class="author-name">yazan: <strong>{{ prompt.author.username }}</strong></span>
+                        </div>
+                        
+                        <div class="card-actions">
+                            <a href="{{ url_for('main.prompt_detail', id=prompt.id) }}" class="btn btn-sm btn-outline">İncele</a>
+                            {% if current_user.is_authenticated and prompt.author == current_user %}
+                                <a href="{{ url_for('main.prompt_edit', id=prompt.id) }}" class="btn btn-sm btn-text">Düzenle</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </article>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="empty-state glass-panel">
+            <svg class="empty-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H7c0-2.76 2.24-5 5-5s5 2.24 5 5c0 1.04-.42 1.99-1.07 2.75z"/></svg>
+            <h3>Hiç Prompt Bulunamadı</h3>
+            <p>Bu kullanıcı henüz sinematik bir prompt paylaşmamış.</p>
+            {% if current_user.is_authenticated and current_user == user %}
+                <a href="{{ url_for('main.prompt_new') }}" class="btn btn-primary">İlk Promptunu Ekle</a>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

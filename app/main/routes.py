@@ -5,7 +5,7 @@ from app import db
 from app.main import main
 from app.main.forms import PromptEntryForm, AIDiaryEntryForm, PromptForm
 
-from app.models import PromptEntry, Tag, AIDiaryEntry
+from app.models import User, PromptEntry, Tag, AIDiaryEntry
 
 @main.route('/')
 @main.route('/index')
@@ -242,5 +242,18 @@ def create():
         flash('Yeni sinematik prompt başarıyla oluşturuldu!', 'success')
         return redirect(url_for('main.index'))
     return render_template('main/create_prompt.html', title='Yeni Prompt Ekle', form=form)
+
+
+@main.route('/profile/<username>')
+def profile(username):
+    # Modern SQLAlchemy 2.x query style
+    user = db.session.scalar(select(User).where(User.username == username))
+    if not user:
+        abort(404)
+        
+    # Get user prompts from newest to oldest (dynamic relationship)
+    prompts = user.prompts.order_by(PromptEntry.created_at.desc()).all()
+    
+    return render_template('main/profile.html', user=user, prompts=prompts)
 
 
