@@ -1,6 +1,10 @@
-# Sinematik AI Prompt Portfolyosu
+# Sinematik AI Prompt Portfolyosu ve AI Günlüğü
 
-Bu proje, **Gazi Üniversitesi TUSAŞ Kazan Meslek Yüksekokulu İnternet Programcılığı** dersi dönem projesi kapsamında geliştirilen bir web uygulamasıdır. Sistem; yapay zeka tabanlı görsel üretim araçları (Midjourney, Stable Diffusion vb.) kullanan tasarımcılar için sinematografik prompt kayıtlarını, lens/ışıklandırma etiketlerini ve görsel üretim günlüklerini yönetmeyi sağlayan bir yönetim panelini oluşturur.
+[![Python Version](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+[![Flask Version](https://img.shields.io/badge/flask-3.0%2B-green.svg)](https://flask.palletsprojects.com/)
+[![License](https://img.shields.io/badge/license-MIT-purple.svg)](LICENSE)
+
+Bu proje, **Gazi Üniversitesi TUSAŞ Kazan Meslek Yüksekokulu İnternet Programcılığı** dersi dönem projesi kapsamında geliştirilen bir web uygulamasıdır. Yapay zeka tabanlı görsel üretim araçları (Midjourney, Stable Diffusion vb.) kullanan tasarımcılar ve yönetmenler için sinematografik prompt kayıtlarını, lens/ışıklandırma etiketlerini ve görsel üretim günlüklerini yönetmeyi sağlayan premium bir yönetim panelidir.
 
 ---
 
@@ -20,19 +24,22 @@ app/
     __init__.py        # Auth Blueprint tanımlaması
     forms.py           # Oturum yönetimi formları
     routes.py          # Giriş/çıkış ve kimlik doğrulama rotaları
-  models.py            # Veritabanı modelleri (SQLAlchemy 2.x)
+  errors/
+    __init__.py        # Hata Yönetimi Blueprint tanımlaması
+    handlers.py        # 404 ve 500 merkezi hata yakalayıcılar
+  models.py            # Veritabanı modelleri (SQLAlchemy 2.x - Mapped)
   templates/           # Jinja2 HTML şablonları
+    errors/            # 404 ve 500 hata sayfaları (Bootstrap 5)
   static/              # CSS, JS ve görsel dosyaları
 docs/
   yapay_zeka_gunlugu.md # Yapay Zeka Günlüğü (AI Log)
   proje_raporu.md       # Proje Raporu (Project Report)
 migrations/            # Flask-Migrate veritabanı şema göç dosyaları
-tests/                 # Birim ve entegrasyon testleri
+tests/                 # Birim ve entegrasyon testleri (36 test)
 config.py              # Uygulama yapılandırma parametreleri
 requirements.txt       # Gerekli Python kütüphaneleri listesi
 .env.example           # Örnek çevre değişkenleri şablonu
 .env                   # Yerel çevre değişkenleri (Veritabanı URI, Gizli Anahtar vb.)
-.gitignore             # Git'e eklenmeyecek dosyalar listesi
 run.py                 # Uygulamayı başlatan ana giriş noktası
 ```
 
@@ -42,28 +49,29 @@ run.py                 # Uygulamayı başlatan ana giriş noktası
 
 Projede sadece aşağıda belirtilen temel kütüphaneler kullanılmıştır:
 - **Flask 3.x**: Web uygulama çatısı
-- **Flask-SQLAlchemy**: Veritabanı işlemleri ve ORM yönetimi
+- **Flask-SQLAlchemy**: Veritabanı işlemleri ve modern ORM (SQLAlchemy 2.x) yönetimi
 - **Flask-Migrate**: Veritabanı şeması göç işlemleri
 - **Flask-Login**: Kullanıcı giriş/çıkış ve oturum yönetimi
 - **Flask-WTF**: Güvenli form işlemleri ve CSRF koruması
 - **python-dotenv**: `.env` dosyasındaki çevre değişkenlerinin yönetimi
 - **SQLite**: Hafif ve taşınabilir yerel ilişkisel veritabanı
+- **Bootstrap 5**: Hata sayfalarının (404/500) responsive ve şık tasarımı için
 
 ---
 
-## ⚙️ Kurulum ve Çalıştırma
+## ⚙️ Kurulum ve Yerelde Çalıştırma
 
-Projeyi yerel bilgisayarınızda çalıştırmak için aşağıdaki adımları izleyin:
+Projeyi yerel bilgisayarınızda ayağa kaldırmak için aşağıdaki adımları sırasıyla uygulayın:
 
-### 1. Projeyi Klonlayın
-```powershell
+### 1. Depoyu Klonlayın
+```bash
 git clone https://github.com/YusufAkman67/sinematik-ai-portfolyosu.git
 cd sinematik-ai-portfolyosu
 ```
 
 ### 2. Sanal Ortam Oluşturun ve Aktifleştirin
 ```powershell
-# Windows için:
+# Windows için (PowerShell):
 python -m venv venv
 .\venv\Scripts\Activate.ps1
 
@@ -73,12 +81,12 @@ source venv/bin/activate
 ```
 
 ### 3. Bağımlılıkları Yükleyin
-```powershell
+```bash
 pip install -r requirements.txt
 ```
 
 ### 4. Çevre Değişkenlerini Ayarlayın
-`.env.example` dosyasının adını `.env` olarak değiştirin veya kopyalayın, ardından içeriğini projenize göre düzenleyin:
+`.env.example` dosyasının bir kopyasını oluşturup adını `.env` olarak değiştirin ve içeriğini düzenleyin:
 ```env
 SECRET_KEY=dev-secret-key-12345
 DATABASE_URL=sqlite:///app_dev.db
@@ -86,22 +94,24 @@ FLASK_APP=run.py
 FLASK_DEBUG=1
 ```
 
-### 5. Veritabanı Göçlerini Uygulayın
-```powershell
+### 5. Veritabanını Yapılandırın ve Göçleri Uygulayın
+Veritabanı şemasını oluşturmak veya en güncel sürüme yükseltmek için:
+```bash
 flask db upgrade
 ```
 
-### 6. Uygulamayı Çalıştırın
-```powershell
-python run.py
+### 6. Uygulamayı Başlatın
+```bash
+flask run
 ```
-Uygulama varsayılan olarak **`http://127.0.0.1:5000`** adresinde çalışmaya başlayacaktır.
+Uygulama varsayılan olarak **`http://127.0.0.1:5000`** adresinde çalışmaya başlayacaktır. Tarayıcınızda bu adresi açarak uygulamayı kullanabilirsiniz.
 
 ---
 
 ## 🧪 Testlerin Koşturulması
 
-Uygulamada yer alan tüm testleri çalıştırmak için terminalde şu komutu uygulayınız:
-```powershell
-.\venv\Scripts\python.exe -m unittest discover -s tests
+Uygulamada yer alan tüm birim ve entegrasyon testlerini (toplam 36 adet) koşturmak için terminalde şu komutu çalıştırınız:
+```bash
+venv\Scripts\python.exe -m unittest discover tests
 ```
+Tüm testler hatasız bir şekilde (`OK`) tamamlanmaktadır.
