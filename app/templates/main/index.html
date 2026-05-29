@@ -103,7 +103,7 @@
                                         <div class="avatar-circle bg-secondary text-white rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 28px; height: 28px; font-size: 0.8rem; font-weight: bold;">
                                             {{ prompt.author.username[0] | upper }}
                                         </div>
-                                        <small class="text-muted">yazan: <strong class="text-white">{{ prompt.author.username }}</strong></small>
+                                        <small class="text-muted">yazan: <a href="{{ url_for('main.profile', username=prompt.author.username) }}" class="text-white text-decoration-none"><strong>{{ prompt.author.username }}</strong></a></small>
                                     </div>
                                     
                                     <div class="card-actions d-flex gap-2">
