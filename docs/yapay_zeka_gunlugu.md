@@ -8,29 +8,77 @@ Bu günlük, **Sinematik AI Prompt Portfolyosu ve AI Günlüğü** projesinin ge
 
 Aşağıda, kullanıcının projeyi şekillendiren ve AI asistanının eski/yanlış kod yazma alışkanlıklarını kırarak modern standartları zorunlu kıldığı kritik oturumlar listelenmiştir:
 
-### 📅 Oturum 1-2: SQLAlchemy 2.x Standartlarının Zorlanması ve Model Tasarımı
-*   **Kullanıcı Yönlendirmesi & Uyarı:** AI asistanının Flask-SQLAlchemy projelerinde yaygın olarak kullanılan eski `.query.all()` veya `.query.filter_by()` gibi legacy (SQLAlchemy 1.x) kalıplarını kullanma eğilimi fark edilmiş ve asistan katı bir dille uyarılmıştır.
-*   **Teknik Müdahale:** Veritabanı sorgularının tamamında modern SQLAlchemy 2.0 standartları olan `select`, `scalars` ve `db.session.execute()` yapılarının kullanılması sağlanmıştır. Model tanımlamalarında modern `Mapped` ve `mapped_column` zorunlu kılınmıştır.
+### 📅 Oturum 1 — 26 Mayıs 2026 — 14:00 - 15:30
 
-### 📅 Oturum 3: Mimari Temizlik (forms.py & routes.py Ayrımı) ve Commit Disiplini
-*   **Kullanıcı Yönlendirmesi & Uyarı:** Uygulama modüllerinin kod karmaşasını önlemek adına forms yapılarının doğrudan routes veya şablonlar içinde tanımlanmaması, kesin bir "Separation of Concerns" (Sorumlulukların Ayrılması) prensibiyle çalışılması uyarısı yapılmıştır.
-*   **Teknik Müdahale:** Form tanımları `forms.py` dosyasına taşınmış; rotalar ve iş mantığı `routes.py` içinde bırakılmıştır. İşler küçük parçalara bölünerek sık ve açıklayıcı Git commit'leri (commit odaklı geliştirme) ile ilerlenmiştir.
+- **Hedef:** Projenin temel veritabanı mimarisini kurmak ve AI ajanı ile çalışma prensiplerimi (vibe coding kısıtlarını) belirlemek.
+- **Kullandığım Mod ve Model:** Mod: Plan | Model: Gemini 3 Pro | Görünüm: Manager View
+- **Verdiğim Promptlar:**
+  > "Veritabanı modellerini (PromptEntry, User, Tag) oluştur. Eski Flask-SQLAlchemy sorguları (Model.query) kullanmak KESİNLİKLE YASAKTIR. Modern SQLAlchemy 2.x standardını (db.session.execute, select) kullan."
+- **Ajanın Önerdiği Plan:** Ajan, veritabanı tablolarını oluşturmak için bir plan sundu ancak ilk denemesinde alışkanlık olarak eski `.query` yapısını kullanmaya meyilliydi.  
+  `[Ekran görüntüsü eklenecek: docs/img/oturum-1-plan.png]`
+- **Plan'da Sorguladıklarım:** Eski Flask-SQLAlchemy kullanımına karşı çıktım çünkü dersin rubriğinde modern standartlar ve sürdürülebilir kod mimarisi isteniyordu. Ajanın planını reddedip 2.x standardında ısrar ettim.
+- **Üretilen Kodda Düzelttiklerim:** Sadece [models.py](file:///c:/Users/user/OneDrive/Masaüstü/sinematikaiportfolyosu/app/models.py) üretilirken araya girip, ajan kodu tam yazmadan 2.x kısıtlamasını tekrar hatırlattım.
+- **Karşılaştığım Hatalar ve Çözümler:**
+  - **Hata:** Eski dökümanlardan kaynaklı `User.query.filter_by` kullanımı gelmesi.
+  - **Çözüm:** Promptlara "Strictly SQLAlchemy 2.x" kuralını ekleyerek ajanı doğru yola soktum.
+- **Bu Oturumdan Öğrendiğim:** Yapay zeka ajanlarının varsayılan olarak eski (StackOverflow gibi eski tarihli) verilerle eğitildiği için eski kod kalıplarını yazmaya meyilli olduğunu, kaliteli bir mimari için ajana baştan katı kurallar (sistem promptları/kısıtlar) koymam gerektiğini öğrendim.
+- **Sonraki Oturum İçin Notlar:** Formlar ve Rotalar ([routes.py](file:///c:/Users/user/OneDrive/Masaüstü/sinematikaiportfolyosu/app/main/routes.py)) yazılırken işleri küçük parçalara (commitlere) bölerek ilerlemeliyim.
 
-### 📅 Oturum 4: Güvenlik Kontrolleri ve Yetkilendirme (abort(403))
-*   **Kullanıcı Yönlendirmesi & Uyarı:** Kullanıcıların diğer yazarların oluşturduğu promptları düzenlemesini veya silmesini önlemek adına rotalarda güvenlik açıklarının bırakılmaması gerektiği talimatı verilmiştir.
-*   **Teknik Müdahale:** `prompt_edit` ve `prompt_delete` rotalarında, işlem yapan kullanıcının prompt sahibi olup olmadığı (`prompt.user_id != current_user.id`) kontrol edilmiş, yetkisiz erişimlerde Flask'ın `abort(403)` fonksiyonu tetiklenerek güvenli bir erişim kontrolü kurulmuştur.
+---
 
-### 📅 Oturum 5: Arama/Filtreleme Optimizasyonu ve Sayfalama Parametrelerinin Korunması
-*   **Kullanıcı Yönlendirmesi & Uyarı:** Çoklu filtreleme (arama sorgusu `q` ve etiket filtresi `tag`) yapıldığında, sonraki sayfalara geçildiğinde filtrelerin kaybolması sorunu kullanıcı tarafından fark edilmiş ve parametrelerin korunması talimatı verilmiştir. Ayrıca etiket ilişkilerindeki performans kaybını engellemek için veritabanı sorgularının optimize edilmesi istenmiştir.
-*   **Teknik Müdahale:** Jinja2 şablonlarındaki sayfalama linklerine `q` ve `tag` parametreleri entegre edilmiştir. Etiket filtrelemesinde ilişkili tablo üzerinden `any()` filtresi kullanılarak tek adımlı, performanslı bir veritabanı sorgusu oluşturulmuştur.
+### 📅 Oturum 2 — 27 Mayıs 2026 — 11:30 - 13:00
 
-### 📅 Oturum 6: Sinematik Hata Yönetimi ve Test Kapsamı
-*   **Kullanıcı Yönlendirmesi & Uyarı:** Uygulamanın tamamlanmasının ardından, profesyonel bir dokunuş için 404 (Sayfa Bulunamadı) ve 500 (Sunucu Hatası) durumlarının yakalanıp sinematik temaya uygun özelleştirilmiş hata şablonlarıyla gösterilmesi uyarısı yapılmıştır.
-*   **Teknik Müdahale:** `app/errors` adında yeni bir blueprint oluşturulmuştur. 500 hatası durumunda veritabanında oluşabilecek tutarsızlıkları önlemek için `db.session.rollback()` çağrısı eklenmiş, Bootstrap 5 tabanlı, premium dark temalı `404.html` ve `500.html` sayfaları oluşturulmuştur. 404 sayfasında *"Aradığınız sahne mevcut değil"*, 500 sayfasında ise *"Beklenmedik bir kurgu hatası oluştu"* gibi yaratıcı metinler ve CSS animasyonları kullanılmıştır.
+- **Hedef:** Oluşturulan promptları düzenleme ve silme işlevlerini eklemek, daha da önemlisi başkalarının promptlarını silmeyi engelleyecek güvenlik (yetki) kontrollerini kurmak.
+- **Kullandığım Mod ve Model:** Mod: Plan | Model: Claude Sonnet 4.6 | Görünüm: Manager View
+- **Verdiğim Promptlar:**
+  > "Kullanıcıların promptları düzenlemesi ve silmesi için /edit ve /delete rotalarını yaz. KRİTİK: Her iki rotada da prompt.user_id ile current_user.id eşleşmiyorsa abort(403) ile yetkisiz erişim hatası döndür."
+- **Ajanın Önerdiği Plan:** Ajan rotaları oluşturdu ve yetki denetimini plana başarıyla dahil etti. Eski rotaların kırılmaması için geri dönük uyumluluk önerdi.  
+  `[Ekran görüntüsü eklenecek: docs/img/oturum-2-yetki-plani.png]`
+- **Plan'da Sorguladıklarım:** Ajanın planını dikkatle inceledim çünkü güvenlik açığı projenin kalitesini doğrudan etkiler. Planın içinde `abort(403)` adımını net olarak gördüğüm için ekstra bir müdahaleye gerek duymadan onayladım.
+- **Üretilen Kodda Düzelttiklerim:** [create_prompt.html](file:///c:/Users/user/OneDrive/Masaüstü/sinematikaiportfolyosu/app/templates/main/create_prompt.html) dosyasında düzenleme moduna geçildiğinde sayfa başlığının dinamik (`{% if is_edit %}`) değişmesi kodunu başarılı bulup aynen bıraktım.
+- **Karşılaştığım Hatalar ve Çözümler:**
+  - **Hata:** Çoka-çok (Many-to-Many) etiket kaydederken eski etiketlerin temizlenmemesi riski.
+  - **Çözüm:** Ajana formdan gelen etiketleri `strip()` ile temizleyip veritabanında var olup olmadığını kontrol ettirerek ilişki kurdurdum.
+- **Bu Oturumdan Öğrendiğim:** Güvenlik adımlarının (Authentication ve Authorization) ajana bırakılamayacak kadar kritik olduğunu, prompt yazarken "sadece sil" demek yerine "yetkisi varsa sil" mantığını doğrudan benim dikte etmem gerektiğini tecrübe ettim.
+- **Sonraki Oturum İçin Notlar:** Sayfalama (Pagination) eklenecek, UI tarafında kart tasarımı iyileştirilecek.
 
-### 📅 Oturum 7: Profil Sayfası, Gezinme Entegrasyonu ve Tıklanabilir Yazar Linkleri
-*   **Kullanıcı Yönlendirmesi & Uyarı:** Kullanıcıların kendi promptlarını sergileyebileceği ve başkalarının portfolyolarını görebileceği public (herkese açık) bir profil sayfası yapısı eklenmesi talimatı verilmiştir. Ayrıca prompt kartlarındaki yazar kullanıcı adlarının tıklanabilir profile yönlendiren bağlantılar haline getirilmesi istenmiştir.
-*   **Teknik Müdahale:** `/profile/<username>` rotası `routes.py` dosyasına eklendi ve `User` modeli sorgulaması yapıldı. Hem anasayfa (`index.html`) hem de profil sayfasındaki (`profile.html`) prompt kartlarında yazar adları, genel tasarımı bozmayacak şekilde `text-white text-decoration-none` sınıfları içeren profil yönlendirme linkleri ile sarmalandı. Navbar'a giriş yapmış kullanıcılar için "Profilim" linki eklendi. Toplam birim ve entegrasyon test sayısı yeni yazılan testlerle **38**'e çıkarıldı.
+---
+
+### 📅 Oturum 3 — 28 Mayıs 2026 — 14:00 - 15:30
+
+- **Hedef:** Anasayfaya +3 bonus puanlık "Arama" (Search) özelliğini eklemek ve veritabanı performansını optimize etmek için etiketleri (Tag) filtrelemek.
+- **Kullandığım Mod ve Model:** Mod: Plan | Model: Gemini 3 Pro | Görünüm: Manager View
+- **Verdiğim Promptlar:**
+  > "Sayfalama (Pagination) ekle. Arama ve etiket filtreleme yapıldığında URL parametrelerinin (q ve tag) 2. sayfaya geçerken kaybolmaması için koruma ekle."
+  > 
+  > "Etiket filtrelemesi yaparken iki ayrı sorgu atma, SQLAlchemy .any() fonksiyonunu kullanarak tek sorguda (EXISTS) işi bitir."
+- **Ajanın Önerdiği Plan:** Ajan, hem büyük/küçük harf duyarsız arama için `ilike` kullandı hem de etiket filtresi için `.any()` optimizasyonunu plana dahil etti. URL'deki `q` parametresini sayfalama linklerinde korudu.  
+  `[Ekran görüntüsü eklenecek: docs/img/oturum-3-arama-pagination.png]`
+- **Plan'da Sorguladıklarım:** Sayfalar arası geçişte arama kelimesinin sıfırlanması çok yaygın bir hatadır. Ajanın HTML tarafında `url_for('main.index', page=..., q=q, tag=tag_name)` yazarak bu parametreleri koruyup korumadığını özellikle kontrol ettim.
+- **Üretilen Kodda Düzelttiklerim:** Jinja2 şablonundaki değişken çakışmalarını önlemek için etiket parametresini `tag_name` olarak izole ettik.
+- **Karşılaştığım Hatalar ve Çözümler:**
+  - **Hata:** Yok. Ajan `.any()` yapısını kusursuz kurdu.
+  - **Çözüm:** -
+- **Bu Oturumdan Öğrendiğim:** Yapay zeka ile kod yazarken sadece özelliğin "çalışması" değil, "nasıl çalıştığı" da önemlidir. Ajanın veritabanını yoracak N+1 veya çift sorgu mantığı yerine, `.any()` gibi optimize edilmiş ORM standartlarına yönlendirilmesinin performansa ciddi katkı sağladığını öğrendim.
+
+---
+
+### 📅 Oturum 4 — 29 Mayıs 2026 — 12:00 - 13:30
+
+- **Hedef:** Kullanıcı deneyimini (UX) artırmak için özel 404/500 hata sayfaları eklemek ve kullanıcılara kendi promptlarını sergileyebilecekleri herkese açık bir Profil (Portfolyo) sayfası oluşturmak.
+- **Kullandığım Mod ve Model:** Mod: Plan | Model: Claude Sonnet 4.6 | Görünüm: Manager View
+- **Verdiğim Promptlar:**
+  > "404 ve 500 hatalarını yakalamak için errors adında yeni bir blueprint oluştur ve sinematik tasarımlı hata sayfaları (html) ekle."
+  > 
+  > "Kullanıcıların promptlarını sergileyecekleri /profile/<username> rotasını ekle ve anasayfadaki kartlarda yazan kullanıcı isimlerini bu profile giden tıklanabilir linklere dönüştür."
+- **Ajanın Önerdiği Plan:** Ajan, hata yönetimini ana koddan ayırıp merkezi bir errors blueprint'i kurmayı önerdi. Profil sayfası için de anasayfadaki kart tasarımının birebir aynısını kullanarak görsel bütünlüğü sağladı.
+- **Plan'da Sorguladıklarım:** Başlangıçta profil rotası kurulmuştu ancak anasayfadan bu profillere yönlendirme yoktu. UX (Kullanıcı Deneyimi) açısından bu eksikliği fark ettim ve ajanın planına müdahale ederek anasayfadaki yazar isimlerini `href` ile tıklanabilir hale getirmesini talep ettim.
+- **Üretilen Kodda Düzelttiklerim:** [index.html](file:///c:/Users/user/OneDrive/Masaüstü/sinematikaiportfolyosu/app/templates/main/index.html) içinde, yazar adının (`prompt.author.username`) düz metin olmaktan çıkarılıp `url_for('main.profile', username=prompt.author.username)` ile sarılmasını sağladım.
+- **Karşılaştığım Hatalar ve Çözümler:**
+  - **Hata:** Kullanıcıların profillerini manuel olarak URL'ye yazarak bulmak zorunda kalması (Kötü UX).
+  - **Çözüm:** Anasayfadaki yazar isimlerinin altı çizgisiz (`text-decoration-none`) şık linklere dönüştürülerek kullanıcılar arası navigasyonun sağlanması.
+- **Bu Oturumdan Öğrendiğim:** İyi bir yazılımın sadece arka planda tıkır tıkır çalışan kodlardan ibaret olmadığını; arayüzdeki ufak bir tıklanabilir linkin (UX dokunuşunun) uygulamanın "amatör bir ödev" ile "profesyonel bir ürün" arasındaki farkı belirlediğini tecrübe ettim. Ayrıca hata sayfalarının ayrı bir Blueprint ile yönetilmesinin kod okunabilirliğine büyük katkısı olduğunu gördüm.
+- **Sonraki Oturum İçin Notlar:** PROJE TAMAMLANDI. Tüm dokümantasyon (README, Rapor ve AI Günlüğü) güncellenerek son commit atıldı ve GitHub'a push'landı.
 
 ---
 
@@ -38,5 +86,5 @@ Aşağıda, kullanıcının projeyi şekillendiren ve AI asistanının eski/yanl
 
 *   **Adım 1: Proje İskeleti (Factory Pattern):** Flask 3.x ve Blueprint mimarisiyle sürdürülebilir altyapı kuruldu.
 *   **Adım 2: Veritabanı Şeması:** Flask-Migrate ile SQLite şema göçleri yönetildi.
-*   **Adım 3: HTML5 & Premium Vanilla CSS:** Slate-900 glassmorphism tasarımı, kopyalama fonksiyonu ve responsive navigasyon vanilla CSS (`style.css`) ile geliştirildi.
+*   **Adım 3: HTML5 & Premium Vanilla CSS:** Slate-900 glassmorphism tasarımı, kopyalama fonksiyonu ve responsive navigasyon vanilla CSS ([style.css](file:///c:/Users/user/OneDrive/Masaüstü/sinematikaiportfolyosu/app/static/css/style.css)) ile geliştirildi.
 *   **Adım 4: Birim ve Entegrasyon Testleri:** Flask test client kullanılarak yetkilendirme, arama, sayfalama, hata yönetimi ve profil süreçleri 38 birim testiyle %100 doğrulandı.
