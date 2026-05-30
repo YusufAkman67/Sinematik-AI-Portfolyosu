@@ -107,6 +107,8 @@
                                     </div>
                                     
                                     <div class="card-actions d-flex gap-2">
+                                        <div class="prompt-text-source" style="display: none;">{{ prompt.original_prompt }}</div>
+                                        <button class="btn btn-sm btn-outline px-3 py-1" onclick="copyPromptText(this)">Kopyala</button>
                                         <a href="{{ url_for('main.prompt_detail', id=prompt.id) }}" class="btn btn-sm btn-outline px-3 py-1">İncele</a>
                                         {% if current_user.is_authenticated and prompt.author == current_user %}
                                             <a href="{{ url_for('main.prompt_edit', id=prompt.id) }}" class="btn btn-sm btn-text px-2 py-1 text-decoration-none">Düzenle</a>

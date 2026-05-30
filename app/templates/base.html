@@ -104,5 +104,31 @@
             }
         });
     </script>
+
+    <!-- One-click prompt copy script -->
+    <script>
+        function copyPromptText(button) {
+            const card = button.closest('.prompt-card');
+            const source = card ? card.querySelector('.prompt-text-source') : null;
+            if (!source) return;
+            
+            const text = source.textContent;
+            
+            navigator.clipboard.writeText(text).then(() => {
+                const originalText = button.textContent;
+                button.textContent = 'Kopyalandı!';
+                button.classList.add('copied');
+                button.disabled = true;
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.classList.remove('copied');
+                    button.disabled = false;
+                }, 2000);
+            }).catch(err => {
+                console.error('Kopyalama hatası:', err);
+            });
+        }
+    </script>
 </body>
 </html>

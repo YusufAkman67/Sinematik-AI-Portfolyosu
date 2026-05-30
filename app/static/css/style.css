@@ -249,6 +249,25 @@ h6 {
     color: #ffffff;
 }
 
+.stats-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 1rem;
+    background: rgba(99, 102, 241, 0.1);
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-top: 0.75rem;
+    box-shadow: 0 4px 15px rgba(99, 102, 241, 0.1);
+}
+
+.stats-badge svg {
+    color: var(--accent-primary);
+}
+
 /* Mobile Toggle Hamburger */
 .navbar-toggle {
     display: none;
@@ -304,6 +323,12 @@ h6 {
 .btn-outline:hover {
     border-color: var(--accent-primary);
     background: rgba(99, 102, 241, 0.08);
+}
+
+.btn-outline.copied {
+    border-color: var(--success);
+    color: var(--success);
+    background: rgba(16, 185, 129, 0.08);
 }
 
 .btn-secondary {

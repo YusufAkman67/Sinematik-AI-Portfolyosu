@@ -1,6 +1,6 @@
-from flask import render_template, redirect, url_for, flash, request, abort
+from flask import render_template, redirect, url_for, flash, request, abort, jsonify
 from flask_login import login_required, current_user
-from sqlalchemy import select
+from sqlalchemy import select, func
 from app import db
 from app.main import main
 from app.main.forms import PromptEntryForm, AIDiaryEntryForm, PromptForm
@@ -251,9 +251,33 @@ def profile(username):
     if not user:
         abort(404)
         
+    # Modern SQLAlchemy 2.x count query style
+    prompt_count = db.session.scalar(
+        select(func.count()).select_from(PromptEntry).where(PromptEntry.user_id == user.id)
+    )
+        
     # Get user prompts from newest to oldest (dynamic relationship)
     prompts = user.prompts.order_by(PromptEntry.created_at.desc()).all()
     
-    return render_template('main/profile.html', user=user, prompts=prompts)
+    return render_template('main/profile.html', user=user, prompts=prompts, prompt_count=prompt_count)
+
+
+@main.route('/api/v1/prompts', methods=['GET'])
+def api_prompts():
+    # Modern SQLAlchemy 2.x query style
+    stmt = select(PromptEntry).order_by(PromptEntry.created_at.desc()).limit(10)
+    prompts = db.session.scalars(stmt).all()
+    
+    prompts_list = []
+    for p in prompts:
+        prompts_list.append({
+            'id': p.id,
+            'title': p.title,
+            'original_prompt': p.original_prompt,
+            'author': p.author.username if p.author else None,
+            'tags': [t.name for t in p.tags]
+        })
+        
+    return jsonify(prompts_list)
 
 

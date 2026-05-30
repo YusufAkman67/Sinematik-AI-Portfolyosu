@@ -82,9 +82,57 @@ Aşağıda, kullanıcının projeyi şekillendiren ve AI asistanının eski/yanl
 
 ---
 
+### 📅 Oturum 5 — 30 Mayıs 2026 — 12:00 - 12:10
+
+- **Hedef:** Kullanıcı deneyimini (UX) artırmak için prompt metinlerini tek tıkla kopyalayabilen bir buton eklemek.
+- **Kullandığım Mod ve Model:** Mod: Plan | Model: Gemini 3.5 Flash | Görünüm: Manager View
+- **Verdiğim Promptlar:**
+  > "app/templates/main/index.html ve (varsa) profile.html içindeki prompt kartlarının sağ alt köşesine küçük, şık bir "Kopyala" butonu (veya kopyalama ikonu) ekle. Butona tıklandığında Vanilla JavaScript kullanarak prompt.original_prompt metnini kullanıcının panosuna kopyala. Kopyalama başarılı olduğunda butonun metni 2 saniyeliğine 'Kopyalandı!' olarak değişsin, sonra eski haline dönsün."
+- **Ajanın Önerdiği Plan:** Ajan, kopyalama işlemini global olarak yönetmek için [base.html](file:///c:/Users/user/OneDrive/Masaüstü/sinematikaiportfolyosu/app/templates/base.html) içine tek bir JavaScript fonksiyonu eklemeyi, kartların içine ise görünmez `.prompt-text-source` konteynerları yerleştirmeyi önerdi.
+- **Plan'da Sorguladıklarım:** Kopyalanan promptların kısaltılmış (`truncate(160)`) versiyonu yerine orijinal uzun halinin kopyalanmasını garanti altına almak için `prompt.original_prompt` verisini sayfada güvenli bir hidden div'de saklama yaklaşımını özellikle kontrol ettim ve onayladım.
+- **Üretilen Kodda Düzelttiklerim:** Başarılı kopyalama sonrasında butona eklenen `.copied` sınıfının Vanilla CSS ile yeşil renk ve hafif bir parlama efektiyle modern bir glassmorphism animasyonuna sahip olmasını sağladım.
+- **Karşılaştığım Hatalar ve Çözümler:**
+  - **Hata:** Çift tırnak içeren promptların HTML data niteliklerine yazıldığında HTML etiket yapısını kırması riski.
+  - **Çözüm:** Prompt metnini veri öznitelikleri (`data-prompt`) yerine, kart içerisinde `style="display: none;"` olan görünmez bir div içinde tutarak HTML parsing hatalarını tamamen engelledim.
+- **Bu Oturumdan Öğrendiğim:** Kullanıcıların sıkça yapacağı "kopyala-yapıştır" işlemini kolaylaştırmanın ürünü çok daha profesyonel hissettirdiğini gördüm. Ayrıca, kod tekrarlarını önlemek amacıyla bu tür global etkileşimlerin ortak bir base şablonda tekilleştirilmesinin mimari sürdürülebilirliğe katkısını pekiştirdim.
+
+---
+
+### 📅 Oturum 6 — 30 Mayıs 2026 — 12:10 - 12:20
+
+- **Hedef:** Kullanıcının profil sayfasının üst kısmına, üretkenliğini gösteren ufak bir istatistik paneli (dashboard) eklemek.
+- **Kullandığım Mod ve Model:** Mod: Plan | Model: Gemini 3.5 Flash | Görünüm: Manager View
+- **Verdiğim Promptlar:**
+  > "app/main/routes.py içindeki profile rotasında, bu kullanıcının toplam kaç prompt ürettiğini SQLAlchemy 2.x standardı ile say (db.session.scalar(select(func.count()).select_from(PromptEntry).where(...))). app/templates/main/profile.html sayfasında, kullanıcının adının hemen altına şık Bootstrap 5 Badge'leri veya ufak kartlar kullanarak bu istatistiği yaz (Örn: "Toplam Üretim: 12 Prompt")."
+- **Ajanın Önerdiği Plan:** Ajan, `sqlalchemy` modülünden `func` yapısını kullanarak modern bir count sorgusu oluşturmayı ve elde edilen değeri şablona aktarmayı önerdi. Arayüz tarafında ise harici Bootstrap bağımlılığı olmadan, uygulamanın kendi Vanilla CSS tasarım sistemine entegre edilmiş şık ve glassmorphic bir rozet tasarladı.
+- **Plan'da Sorguladıklarım:** Profil sayfasının responsive yapısının ve genel görünümünün bozulmaması için rozetin konumlandırılacağı yeri ve yerel CSS değişkenlerinin (`--accent-primary`, `--success` vb.) uyumluluğunu kontrol ettim.
+- **Üretilen Kodda Düzelttiklerim:** Eklenen istatistik rozetinin sol tarafına SVG tabanlı bir döküman ikonu yerleştirerek görsel zenginliği artırdım. Ayrıca test suite içerisine bu istatistiğin doğru şekilde sorgulanıp gösterildiğini doğrulayan yeni bir assertion eklettim.
+- **Karşılaştığım Hatalar ve Çözümler:**
+  - **Hata:** Projede genel olarak Bootstrap CSS kütüphanesinin (hata sayfaları hariç) yüklü olmaması sebebiyle saf Bootstrap badge sınıflarının profil sayfasında stilize edilmeden ham görünmesi riski.
+  - **Çözüm:** `style.css` dosyasına `.stats-badge` adında özel bir glassmorphic stil kuralı ekleyerek Bootstrap stil kısıtını tamamen aştım ve görsel bütünlüğü korudum.
+- **Bu Oturumdan Öğrendiğim:** Basit okuma (SELECT) operasyonlarının bile SQLAlchemy 2.x standartlarına göre titizlikle yazılması gerektiğini, projedeki kütüphane kısıtlarına göre (harici kütüphane/Bootstrap bağımlılığı olmadan) Vanilla CSS ile esnek çözümler üretmenin önemini tecrübe ettim.
+
+---
+
+### 📅 Oturum 7 — 30 Mayıs 2026 — 12:20 - 12:30
+
+- **Hedef:** Dış sistemlerin verilerimizi okuyabilmesi için son eklenen 10 promptu JSON formatında döndüren bir REST API endpoint'i eklemek.
+- **Kullandığım Mod ve Model:** Mod: Plan | Model: Gemini 3.5 Flash | Görünüm: Manager View
+- **Verdiğim Promptlar:**
+  > "app/main/routes.py içine /api/v1/prompts rotasını (sadece GET metodu) ekle. Veritabanındaki en yeni 10 PromptEntry kaydını çek (SQLAlchemy 2.x ile). Bu kayıtların id, title, original_prompt, author ve tags alanlarını bir Python sözlüğüne dönüştür. Bu veriyi jsonify() kullanarak JSON formatında döndür."
+- **Ajanın Önerdiği Plan:** Ajan, `flask` modülünden `jsonify` kullanarak yeni bir rota tanımlamayı, bu rotada SQLAlchemy 2.x standardı ile en yeni 10 promptu sorgulamayı ve bunları uygun JSON yapısıyla dışa aktarmayı önerdi.
+- **Plan'da Sorguladıklarım:** API rotasının güvenli olması, sadece GET isteklerine cevap vermesi ve JSON çıktısında yazar adının (`username`) ve ilişkili etiketlerin doğru biçimde serileştirildiğinden emin olmak için planı denetledim.
+- **Üretilen Kodda Düzelttiklerim:** Rota için sıfırdan `tests/test_api.py` adında bir test modülü yazdırarak, API yanıtının durum kodunu (200 OK), içerik türünü (`application/json`) ve veri uzunluğunu/formatını test kapsamına eklettim.
+- **Karşılaştığım Hatalar ve Çözümler:**
+  - **Hata:** Yok. Rota ve serileştirme mantığı SQLAlchemy 2.x ile sorunsuz çalıştı.
+  - **Çözüm:** -
+- **Bu Oturumdan Öğrendiğim:** Uygulamanın sadece bir web arayüzünden ibaret kalmayıp dış dünyaya bir servis (REST API) olarak açılmasının modern yazılım mimarisindeki önemini kavradım. API yapılarının kararlılığını korumak için entegrasyon testlerinin ne kadar kritik bir yer tuttuğunu pekiştirdim.
+
+---
+
 ## 📈 Geliştirme Adımları ve Teknik Kararlar (Özet)
 
 *   **Adım 1: Proje İskeleti (Factory Pattern):** Flask 3.x ve Blueprint mimarisiyle sürdürülebilir altyapı kuruldu.
 *   **Adım 2: Veritabanı Şeması:** Flask-Migrate ile SQLite şema göçleri yönetildi.
 *   **Adım 3: HTML5 & Premium Vanilla CSS:** Slate-900 glassmorphism tasarımı, kopyalama fonksiyonu ve responsive navigasyon vanilla CSS ([style.css](file:///c:/Users/user/OneDrive/Masaüstü/sinematikaiportfolyosu/app/static/css/style.css)) ile geliştirildi.
-*   **Adım 4: Birim ve Entegrasyon Testleri:** Flask test client kullanılarak yetkilendirme, arama, sayfalama, hata yönetimi ve profil süreçleri 38 birim testiyle %100 doğrulandı.
+*   **Adım 4: Birim ve Entegrasyon Testleri:** Flask test client kullanılarak yetkilendirme, arama, sayfalama, hata yönetimi, profil ve REST API süreçleri 39 birim testiyle %100 doğrulandı.

@@ -37,6 +37,9 @@ class ProfileTestCase(unittest.TestCase):
         self.assertIn('test_director', response.data.decode('utf-8'))
         # Check that the user's prompt title is displayed
         self.assertIn('Test Director Prompt', response.data.decode('utf-8'))
+        # Check that the total production count is displayed
+        self.assertIn('Toplam Üretim:', response.data.decode('utf-8'))
+        self.assertIn('1 Prompt', response.data.decode('utf-8'))
 
     def test_profile_page_not_found(self):
         response = self.client.get('/profile/non_existent_user')

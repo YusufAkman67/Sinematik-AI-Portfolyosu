@@ -5,6 +5,12 @@
     <h1 class="hero-title">
         @<span class="text-gradient">{{ user.username }}</span> Portfolyosu
     </h1>
+    <div class="profile-stats">
+        <span class="stats-badge">
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" style="vertical-align: middle;"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>
+            Toplam Üretim: {{ prompt_count }} Prompt
+        </span>
+    </div>
     <p class="hero-subtitle">
         {{ user.username }} tarafından oluşturulmuş tüm sinematik AI promptları.
     </p>
@@ -43,6 +49,8 @@
                         </div>
                         
                         <div class="card-actions">
+                            <div class="prompt-text-source" style="display: none;">{{ prompt.original_prompt }}</div>
+                            <button class="btn btn-sm btn-outline" onclick="copyPromptText(this)">Kopyala</button>
                             <a href="{{ url_for('main.prompt_detail', id=prompt.id) }}" class="btn btn-sm btn-outline">İncele</a>
                             {% if current_user.is_authenticated and prompt.author == current_user %}
                                 <a href="{{ url_for('main.prompt_edit', id=prompt.id) }}" class="btn btn-sm btn-text">Düzenle</a>
