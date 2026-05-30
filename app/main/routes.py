@@ -119,7 +119,17 @@ def prompt_delete(id):
     if prompt.user_id != current_user.id:
         abort(403)
         
+    # Silinecek prompt ile ilişkili etiketleri sakla
+    tags_to_check = list(prompt.tags)
+    
     db.session.delete(prompt)
+    db.session.commit()
+    
+    # Kimsesiz (hiçbir prompt ile ilişkisi kalmayan) etiketleri sil
+    for tag in tags_to_check:
+        if not tag.prompts:
+            db.session.delete(tag)
+            
     db.session.commit()
     flash('Prompt başarıyla silindi.', 'success')
     return redirect(url_for('main.index'))

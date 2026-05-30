@@ -235,15 +235,33 @@ class RoutesTestCase(unittest.TestCase):
 
     def test_prompt_delete(self):
         p = PromptEntry(title='To Be Deleted', original_prompt='delete me', user_id=self.user.id)
-        db.session.add(p)
+        p_other = PromptEntry(title='Keep Me', original_prompt='do not delete', user_id=self.user.id)
+        
+        t_orphaned = Tag(name='orphaned')
+        t_shared = Tag(name='shared')
+        
+        db.session.add_all([p, p_other, t_orphaned, t_shared])
+        db.session.commit()
+        
+        p.tags.append(t_orphaned)
+        p.tags.append(t_shared)
+        p_other.tags.append(t_shared)
         db.session.commit()
 
         self.login()
         response = self.client.post(f'/prompt/{p.id}/delete', follow_redirects=True)
         self.assertEqual(response.status_code, 200)
         
-        deleted_prompt = PromptEntry.query.get(p.id)
+        deleted_prompt = db.session.get(PromptEntry, p.id)
         self.assertIsNone(deleted_prompt)
+        
+        # Orphaned tag should be automatically cleaned up
+        deleted_tag = db.session.get(Tag, t_orphaned.id)
+        self.assertIsNone(deleted_tag)
+        
+        # Shared tag should still exist
+        kept_tag = db.session.get(Tag, t_shared.id)
+        self.assertIsNotNone(kept_tag)
 
     def test_diary_crud_anonymous(self):
         response = self.client.get('/diary')
