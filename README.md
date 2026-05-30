@@ -6,6 +6,13 @@
 
 Bu proje, **Gazi Üniversitesi TUSAŞ Kazan Meslek Yüksekokulu İnternet Programcılığı** dersi dönem projesi kapsamında geliştirilen bir web uygulamasıdır. Yapay zeka tabanlı görsel üretim araçları (Midjourney, Stable Diffusion vb.) kullanan tasarımcılar ve yönetmenler için sinematografik prompt kayıtlarını, lens/ışıklandırma etiketlerini ve görsel üretim günlüklerini yönetmeyi sağlayan premium bir yönetim panelidir.
 
+### 🎬 Demo / Tanıtım Videosu
+Projenin tanıtım, kurulum ve kullanım detaylarını içeren videoyu aşağıdaki bağlantıdan izleyebilirsiniz:
+
+[![Demo / Tanıtım Videosu](https://img.shields.io/badge/YouTube-Demo%20%26%20Tan%C4%B1t%C4%B1m-red?logo=youtube&style=for-the-badge)](https://www.youtube.com/watch?v=h_CcRN6u77M)
+
+👉 [Sinematik AI Portfolyosu Demo Videosunu YouTube Üzerinden İzlemek İçin Tıklayın](https://www.youtube.com/watch?v=h_CcRN6u77M)
+
 ---
 
 ## 🚀 Proje Mimarisi: Application Factory Pattern & Blueprints
@@ -41,6 +48,7 @@ requirements.txt       # Gerekli Python kütüphaneleri listesi
 .env.example           # Örnek çevre değişkenleri şablonu
 .env                   # Yerel çevre değişkenleri (Veritabanı URI, Gizli Anahtar vb.)
 run.py                 # Uygulamayı başlatan ana giriş noktası
+cleanup.py             # Kimsesiz veya hatalı etiketleri temizleyen bakım betiği
 ```
 
 ---
@@ -105,6 +113,14 @@ flask db upgrade
 flask run
 ```
 Uygulama varsayılan olarak **`http://127.0.0.1:5000`** adresinde çalışmaya başlayacaktır. Tarayıcınızda bu adresi açarak uygulamayı kullanabilirsiniz.
+
+### 7. Veritabanı Temizliği (Bakım)
+Projede veri bütünlüğünü korumak ve veritabanını temiz tutmak için iki yöntem bulunur:
+- **Otomatik Temizlik (Gerçek Zamanlı):** Arayüz üzerinden bir prompt silindiğinde, o prompta bağlı olan ve başka hiçbir prompt tarafından kullanılmayan (kimsesiz/orphaned) tüm etiketler veritabanından anında ve otomatik olarak temizlenir.
+- **Toplu/Manuel Temizlik:** Veritabanında daha önceden birikmiş olan kimsesiz etiketleri veya geçersiz formatta girilmiş etiketleri (`##night`, `#night` vb.) toplu olarak temizlemek için aşağıdaki bağımsız bakım betiğini koşturabilirsiniz:
+```bash
+venv\Scripts\python cleanup.py
+```
 
 ---
 

@@ -127,7 +127,26 @@ Aşağıda, kullanıcının projeyi şekillendiren ve AI asistanının eski/yanl
   - **Hata:** Yok. Rota ve serileştirme mantığı SQLAlchemy 2.x ile sorunsuz çalıştı.
   - **Çözüm:** -
 - **Bu Oturumdan Öğrendiğim:** Uygulamanın sadece bir web arayüzünden ibaret kalmayıp dış dünyaya bir servis (REST API) olarak açılmasının modern yazılım mimarisindeki önemini kavradım. API yapılarının kararlılığını korumak için entegrasyon testlerinin ne kadar kritik bir yer tuttuğunu pekiştirdim.
-- **Sonraki Oturum İçin Notlar:** PROJE TAMAMLANDI. Tüm geliştirme, hata giderme ve optimizasyon süreçleri başarıyla tamamlandı. Dokümantasyonlar (README, Proje Raporu ve Yapay Zeka Günlüğü) son duruma göre güncellenerek GitHub'a gönderildi.
+- **Sonraki Oturum İçin Notlar:** Veritabanındaki kimsesiz/geçersiz etiketlerin (örneğin ##night) temizlenmesi için bağımsız bir bakım betiği (cleanup.py) eklenmesi ve prompt silindiğinde otomatik etiket temizleme özelliğinin entegrasyonu.
+
+---
+
+### 📅 Oturum 8 — 30 Mayıs 2026 — 20:30 - 20:45
+
+- **Hedef:** Veritabanındaki sahipsiz/geçersiz etiketlerin (`#night`, `##night` vb.) temizlenmesi için bağımsız bir bakım betiği (`cleanup.py`) geliştirmek ve siteden bir prompt silindiğinde ilişkili sahipsiz etiketlerin otomatik temizlenmesini sağlamak.
+- **Kullandığım Mod ve Model:** Mod: Plan/Direct | Model: Gemini 3.5 Flash (High) | Görünüm: Manager View
+- **Verdiğim Promptlar:**
+  > "Bağlam: Veritabanımızdaki Tag tablosunda, yanlış girilmiş veya hiçbir prompt ile ilişkisi kalmayan (kimsesiz/orphaned) etiketler birikiyor (örneğin UI'da görünen "##night" etiketi).
+  > Hedef: Kullanılmayan veya hatalı etiketleri veritabanından güvenli bir şekilde silmek için bağımsız bir temizlik betiği (script) oluşturmak."
+  > "evet ekle ve her şeyi güncelleyip githuba push et"
+- **Ajanın Önerdiği Plan:** Ajan, Flask uygulama bağlamında çalışan ve SQLAlchemy 2.x standardını kullanarak sahipsiz veya hedeflenen etiketleri temizleyen `cleanup.py` scriptini yazmayı önerdi. Ardından kullanıcının isteği üzerine prompt silindiğinde de bu temizliğin otomatik gerçekleşmesini sağlayacak şekilde `app/main/routes.py` dosyasındaki silme rotasını güncelledi.
+- **Plan'da Sorguladıklarım:** Mevcut sistem dosyalarına zarar vermeden bağımsız çalışabilirlik, SQLAlchemy 2.x standartlarına uyumluluk ve silinen promptların diğer ortak etiketlerine zarar vermeden sadece sahipsiz kalanları silme mekanizması.
+- **Üretilen Kodda Düzelttiklerim:** `cleanup.py` betiğinin yanı sıra `tests/test_routes.py` içine yeni otomatik etiket temizleme mantığını doğrulayan entegrasyon test senaryosu eklendi.
+- **Karşılaştığım Hatalar ve Çözümler:**
+  - **Hata:** Yok. Hem `cleanup.py` betiği hem de `routes.py` içindeki otomatik tetikleyici sorunsuz çalıştı ve testleri başarıyla geçti.
+  - **Çözüm:** -
+- **Bu Oturumdan Öğrendiğim:** Veri bütünlüğü ve veritabanı temizliğinin (maintenance) önemi, ilişkisel veritabanlarında many-to-many (çoka-çok) ilişkiler silindiğinde sahipsiz kalan kayıtların (orphan rows) nasıl temizleneceği ve Flask uygulama bağlamının standalone scriptlerde nasıl kullanılacağı.
+- **Sonraki Oturum İçin Notlar:** PROJE TAMAMLANDI. Tüm geliştirme, hata giderme, bakım ve otomatik temizlik entegrasyon süreçleri başarıyla tamamlandı. Dokümantasyonlar (README, Proje Raporu ve Yapay Zeka Günlüğü) son duruma göre güncellenerek GitHub'a gönderildi.
 
 ---
 
@@ -137,3 +156,4 @@ Aşağıda, kullanıcının projeyi şekillendiren ve AI asistanının eski/yanl
 *   **Adım 2: Veritabanı Şeması:** Flask-Migrate ile SQLite şema göçleri yönetildi.
 *   **Adım 3: HTML5 & Premium Vanilla CSS:** Slate-900 glassmorphism tasarımı, kopyalama fonksiyonu ve responsive navigasyon vanilla CSS ([style.css](file:///c:/Users/user/OneDrive/Masaüstü/sinematikaiportfolyosu/app/static/css/style.css)) ile geliştirildi.
 *   **Adım 4: Birim ve Entegrasyon Testleri:** Flask test client kullanılarak yetkilendirme, arama, sayfalama, hata yönetimi, profil ve REST API süreçleri 39 birim testiyle %100 doğrulandı.
+*   **Adım 5: Veritabanı Bakımı ve Temizliği (Cleanup & Automation):** Veritabanındaki sahipsiz etiketleri temizlemek için `cleanup.py` yazıldı ve siteden prompt silindiğinde ilişkili sahipsiz etiketleri otomatik temizleyen altyapı entegre edildi.
