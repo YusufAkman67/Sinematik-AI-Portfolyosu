@@ -7,7 +7,7 @@ Bu proje, yapay zeka tabanlı görsel üretim araçları (Midjourney, Stable Dif
 Uygulama, Flask topluluğu tarafından önerilen modern ve modüler **Application Factory Pattern** ve **Blueprint** mimarisi ile kurulmuştur:
 - **`app/`**: Tüm uygulama dosyalarını barındıran çekirdek klasör.
 - **`auth` Blueprint**: Kullanıcı kayıt, giriş ve çıkış işlemlerinin mantıksal katmanı.
-- **`main` Blueprint**: Rotaların (Prompt ve Günlük işlemleri) CRUD mantığı, arama, etiket bazlı filtreleme, sayfalama ve kullanıcı profili (`/profile/<username>`) süreçleri.
+- **`main` Blueprint**: Rotaların (Prompt ve Günlük işlemleri) CRUD mantığı, arama, etiket bazlı filtreleme, sayfalama, kullanıcı profili (`/profile/<username>`) ve dış sistemler için `/api/v1/prompts` REST API endpoint süreçleri.
 - **`errors` Blueprint**: Uygulama genelinde oluşan 404 (Sayfa Bulunamadı) ve 500 (Sunucu Hatası) hatalarını yakalayan merkezi hata yönetimi katmanı.
 
 ## 3. Veritabanı Modelleri ve İlişki Yapıları
@@ -22,14 +22,15 @@ Veritabanı ilişkileri modern SQLAlchemy 2.x API (Mapped, mapped_column) stiliy
 - **Bootstrap 5 & Responsive Yapı:** Hata sayfaları (404 & 500) ve profil sayfası bağımsız ve güvenli şablonlar olarak tasarlanmış olup Bootstrap 5 grid sistemi ve responsive sınıflarından yararlanılmıştır. Tüm portfolyo ekranları mobil, tablet ve masaüstü çözünürlükleriyle tam uyumludur.
 - **Tıklanabilir Yazar Profil Bağlantıları:** Anasayfa (`index.html`) ve profil sayfasındaki (`profile.html`) prompt kartlarında yer alan yazar kullanıcı adları, kartın görsel yapısını bozmayacak şekilde tıklanabilir linklere dönüştürülmüş ve yazarın kişisel portfolyosuna yönlendirme sağlanmıştır.
 - **Sayfalama (Pagination):** Anasayfada promptların listelendiği alanın altına sayfa numaralarını ve ileri/geri navigasyon butonlarını içeren yarı saydam, glassmorphic sayfalama çubuğu eklenmiştir. Arama ve etiket filtreleri sayfa geçişlerinde URL parametreleri olarak korunmaktadır.
-- **Kopyalama Fonksiyonu:** Detay sayfasındaki "Kopyala" butonu ile promptlar tek tıkla panoya kopyalanabilir.
+- **Kopyalama Fonksiyonu:** Anasayfa, profil ve detay sayfalarındaki prompt kartlarına eklenen "Kopyala" butonu sayesinde, kullanıcılar orijinal prompt içeriğini tek tıkla panoya kopyalayabilir (başarılı kopyalamada buton yeşile dönüp "Kopyalandı!" uyarısı verir).
+- **Profil İstatistikleri (Dashboard):** Kullanıcı profil sayfalarına eklenen özel tasarım istatistik rozeti ile kullanıcının toplamda ürettiği prompt sayısı modern ve görsel bir biçimde listelenir.
 
 ## 5. Güvenlik ve Hata Yönetimi
 - **Erişim Kontrolleri:** Prompt düzenleme ve silme işlemlerinde, işlem yapan kullanıcının prompt sahibi olup olmadığı kontrol edilerek yetkisiz durumlarda `abort(403)` tetiklenmektedir.
 - **İşlem Güvenliği:** 500 sunucu hatası oluştuğunda, yarım kalan veritabanı işlemlerinin veri tutarsızlığına yol açmaması için `db.session.rollback()` çalıştırılarak oturum güvenli bir şekilde sıfırlanmaktadır.
 
 ## 6. Test ve Doğrulama Süreçleri
-Uygulamada yer alan tüm yetkilendirme sınırları, CRUD operasyonları, arama/filtreleme mantığı, sayfalama süreçleri, profil sayfaları ve hata yakalama senaryoları yazılan **38 adet birim ve entegrasyon testi** (unittest) ile otomatik olarak test edilmektedir.
+Uygulamada yer alan tüm yetkilendirme sınırları, CRUD operasyonları, arama/filtreleme mantığı, sayfalama süreçleri, profil sayfaları, hata yakalama senaryoları ve REST API süreçleri yazılan **39 adet birim ve entegrasyon testi** (unittest) ile otomatik olarak test edilmektedir.
 Testlerin koşturulma komutu:
 ```powershell
 venv\Scripts\python.exe -m unittest discover tests
